@@ -1,0 +1,9 @@
+**/*.o
+**/*.exe
+**/bin
+**/obj
+**/output
+**/target
+**/**.iml
+**/.idea
+**/out
