@@ -8,7 +8,12 @@ import java.util.stream.Collectors;
 
 /**
  * <p>contest178</p>
- * <p>description</p>
+ * <p>
+ *     Arrays，fill() func4
+ *     递归 func3
+ *     dfs func4
+ *     map sort func2
+ * </p>
  *
  * @author closer
  * @version 1.0.0
@@ -16,6 +21,12 @@ import java.util.stream.Collectors;
  */
 public class contest178 {
 
+    /**
+     * 1365. 有多少小于当前数字的数字
+     *
+     * @param nums
+     * @return
+     */
     public int[] smallerNumbersThanCurrent(int[] nums) {
         int[] ans = new int[nums.length];
         for (int i = 0; i < nums.length; i++) {
@@ -30,6 +41,7 @@ public class contest178 {
 
 
     /**
+     * 1366. 通过投票对团队排名
      * 权重因子
      * Map排序（按键，按值）
      *
@@ -146,11 +158,13 @@ public class contest178 {
     }
 
     /**
+     * 1367. 二叉树中的列表
      * 路径匹配的递归，有两种情况需要考虑
-     *
+     * <p>
      * 1.root.val != head.val 这个时候，head不变，root进入左右子树，判断左右子树是否和head匹配
      * 2.root.val == head.val 这个时候递归进入左右子树，head变为head.next。如果左右子树匹配过程中，出现了匹配不上的情况，
      * 这个时候，需要回到root和head的情况，重新进入到root.val != head.val这种不匹配的情况。
+     *
      * @param head
      * @param root
      * @return
@@ -171,7 +185,10 @@ public class contest178 {
         return isSubPath(head, root.left) || isSubPath(head, root.right);
     }
 
-    /* 问题在于，当一个不匹配，不能在当前节点重新开始匹配，而一个重新回到上一个匹配失败的地方
+
+
+    /*
+     原版 ： 问题在于，当一个不匹配，不能在当前节点重新开始匹配，而一个重新回到上一个匹配失败的地方
         List<Integer> listnode = new ArrayList<>();
 
         boolean Judge(int index, TreeNode root) {
@@ -201,7 +218,62 @@ public class contest178 {
             }
             return Judge(0, root);
         }
-       */
+     */
+
+    /**
+     * 1368. 使网格图至少有一条有效路径的最小代价
+     * 解题思路：
+     * PS：BFS+记忆搜索
+     * 这题是求最短距离的变种，按最短距离的bfs解法来写。
+     * 在这题中求的最小cost可以当作最短距离，只是这个cost的算法不太一样，当我们
+     * 使用bfs时向上下左右四个方向扩展，向网络所指方向扩展则cost不变，往其他方向
+     * 则cost+1，遍历过程中使用二维数组dst来保存由(0, 0)到其他网格的最小花费。
+     *
+     * @param grid
+     * @return
+     */
+    public int minCost(int[][] grid) {
+        int n = grid.length;
+        int m = grid[0].length;
+        //由(0, 0)到其他网格的最小花费，为-1则表示待计算
+        int dst[][] = new int[n][m];
+        //用来保存待扩展的四个方向在纵轴和横轴上的增量，右-左-下-上
+        int d[][] = {{}, {0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(dst[i], -1);
+        }
+        //用来执行bfs的队列
+        Queue<int[]> queue = new LinkedList<>();
+        //int数组三个参数：纵轴、横轴、当前cost
+        queue.add(new int[]{0, 0, 0});
+        while (!queue.isEmpty()) {
+            for (int i = 0; i < queue.size(); i++) {
+                int q[] = queue.poll();
+                //若处理的这个点是终点，则跳过
+                if (q[0] == n - 1 && q[1] == m - 1) {
+                    continue;
+                }
+                //获取这个点的方向
+                int val = grid[q[0]][q[1]];
+                //从这个点出发的四个方向cost更新
+                for (int j = 1; j <= 4; j++) {
+                    int row = q[0] + d[j][0];
+                    int col = q[1] + d[j][1];
+                    // 规定到达点的范围在盘子内
+                    if (row >= 0 && col >= 0 && row < n && col < m) {
+                        // 若方向和grid中本来的向相同，新增cost为0，否则为1
+                        int add = j == val ? 0 : 1;
+                        //若原来这个点没到达过，或者原来到达这个点的cost较大，则更新，并加入队列
+                        if (dst[row][col] == -1 || dst[row][col] > q[2] + add) {
+                            dst[row][col] = q[2] + add;
+                            queue.add(new int[]{row, col, dst[row][col]});
+                        }
+                    }
+                }
+            }
+        }
+        return Math.max(0, dst[n - 1][m - 1]);
+    }
 
 
     @Test
