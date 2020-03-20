@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -193,6 +194,118 @@ public class dcontest21 {
         Judge(root.left, false, 0);
         return ans;
     }
+
+
+    /**
+     * 1373. 二叉搜索子树的最大键值和
+     * 方法没问题 时间超限TTL   这是一种自顶向下的方法，那么越靠近底部的节点，就会被访问很多次
+     * @正确的方法应该是，访问一个节点时，判断其左**子树**和右**子树**是否是BST，这个不走利用递归，同时记录最大值。
+     * @这是自底向上的方法，保证每个节点访问一次
+     *
+     *  TODO ***值得深思***
+     */
+    int maxBst = 0;
+
+    List<Integer> bst = null;
+
+    ////////////////////begin////////////////////////////
+    // 以每个节点为根，中序了一遍，靠下的节点访问很多次
+    void inOrder_v0(TreeNode root) {
+        if (root != null) {
+            inOrder_v0(root.left);
+            bst.add(root.val);
+            inOrder_v0(root.right);
+        }
+    }
+
+    int JudgeBST_v0(TreeNode root) {
+        bst = new ArrayList<>();
+        inOrder_v0(root);
+        int sum = 0;
+        if (bst.size() == 1) {
+            return bst.get(0);
+        }
+        sum += bst.get(0);
+        for (int i = 1; i < bst.size(); i++) {
+            sum += bst.get(i);
+            if (bst.get(i - 1) >= bst.get(i)) {
+                return -1;
+            }
+        }
+        return sum;
+    }
+
+    void func_v0(TreeNode root) {
+        if (root != null) {
+            func_v0(root.left);
+            int sum;
+            if ((sum = JudgeBST_v0(root)) != -1) {
+                maxBst = Math.max(maxBst, sum);
+            }
+            func_v0(root.right);
+        }
+    }
+
+    public int maxSumBST_v0(TreeNode root) {
+        func_v0(root);
+        return maxBst;
+    }
+    ////////////////////////end/////////////////////////////////
+
+    /**
+     * 无效时返回-1 WA了，因为有些测试用例更好有点为-1，所以边界值也很重要
+     * @param root
+     * @return
+     */
+    int JudgeBST(TreeNode root) {
+        if (root != null) {
+            int left = JudgeBST(root.left);
+            int right = JudgeBST(root.right);
+
+            if (left == 0 && right == 0) {
+                // 两子树都为空
+                maxBst = Math.max(root.val, maxBst);
+                return root.val;
+            } else if (left == 0) {
+                //左子树为空
+                if (root.val < root.right.val && right != Integer.MIN_VALUE) {
+                    maxBst = Math.max(right + root.val, maxBst);
+                    return right + root.val;
+                } else {
+                    return Integer.MIN_VALUE;
+                }
+            } else if (right == 0) {
+                //右子树为空
+                if (root.val > root.left.val && left != Integer.MIN_VALUE) {
+                    maxBst = Math.max(left + root.val, maxBst);
+                    return left + root.val;
+                } else {
+                    return Integer.MIN_VALUE;
+                }
+            }
+
+            // 左右都不是BST
+            if (left == Integer.MIN_VALUE || right == Integer.MIN_VALUE) {
+                return Integer.MIN_VALUE;
+            }
+            if (root.val > root.left.val && root.val < root.right.val) {
+                // 左右都是BST， 加上root还是BST
+                maxBst = Math.max(left + right + root.val, maxBst);
+                return left + right + root.val;
+            } else {
+                // 加上root不是BST
+                return Integer.MIN_VALUE;
+            }
+        }
+        return 0;
+    }
+
+    public int maxSumBST(TreeNode root) {
+        // 不需要它的返回值，需要maxBst
+        JudgeBST(root);
+        return maxBst;
+    }
+
 
 
     @Test
