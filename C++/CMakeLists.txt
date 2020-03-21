@@ -14,4 +14,4 @@ add_executable(C__
         src/Date.cpp
         src/main.cpp
         src/Test1.cpp
-        src/Utils.cpp)
+        src/Utils.cpp src/machine/machine.cpp)
