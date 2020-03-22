@@ -114,6 +114,12 @@ public class contest176 {
         return res;
     }
 
+    /**
+     * 1354. 多次求和构造目标数组
+     * TLE
+     * @param target
+     * @return
+     */
     public boolean isPossible(int[] target) {
         Queue<Long> queue = new PriorityQueue<>(Collections.reverseOrder());
         long sum = 0;
@@ -136,40 +142,42 @@ public class contest176 {
         return true;
     }
 
+    /**
+     * AC
+     * @param target
+     * @return
+     */
     public boolean isPossible_v2(int[] target) {
         if (target.length == 1) {
-            return true;
+            return target[0] == 1;
         }
-        PriorityQueue<Long> pq = new PriorityQueue<>(Collections.reverseOrder());
+        Queue<Long> queue = new PriorityQueue<>(Collections.reverseOrder());
         long sum = 0;
-        for (int i = 0; i < target.length; i++) {
-            sum += target[i];
-            pq.offer((long)target[i]);
+        for (int aTarget : target) {
+            queue.add((long) aTarget);
+            sum += aTarget;
         }
-        //如果此时队列为空或者最大值就是1，直接return true
-        if (pq.isEmpty() || pq.peek() == 1) {
-            return true;
-        }
-        while (true) {
-            //取出最大的那个
-            Long poll = pq.poll();
-            //如果此时堆中最大的为1
-            if (pq.peek() == 1) {
-                //直接看它满足或不满足公式
-                return (poll - 1) % (sum - poll) == 0;
+        while (sum != target.length) {
+            long max = queue.poll();
+            long rest = sum - max;
+            long m = 0;
+            // m的作用见官方题解
+            //https://leetcode-cn.com/problems/construct-target-array-with-multiple-sums/solution/duo-ci-qiu-he-gou-zao-mu-biao-shu-zu-by-leetcode-s/
+            if (max % rest == 0) {
+                m = max / rest - 1;
             } else {
-                //需要计算多少轮才能比第二小的数小
-                long n = (poll - pq.peek()) / (sum - poll) + 1;
-                //得到这个数字
-                long x = poll - n * (sum - poll);
-                if (x <= 0) {
-                    return false;
-                }
-                //更新sum
-                sum = poll - (sum - poll) * (n - 1);
-                pq.offer(x);
+                m = max / rest;
             }
+            long pre = max - rest * m;
+            // 如果pre小于1，则证明队列中最大值不能通过队列中任何正值累加出来，即原队列中有负值，直接false  如[2,1,1,1] -> [-1,1,1,1]
+            // pre>= max 即原队列有负值 [2,1,1,-1] -> [1,1,1,-1]
+            if (pre >= max || pre < 1) {
+                return false;
+            }
+            sum = pre + rest;
+            queue.add(pre);
         }
+        return true;
     }
 
 
