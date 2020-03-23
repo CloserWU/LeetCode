@@ -39,6 +39,7 @@ public class dcontest22 {
 
     /**
      * 1387. 安排电影院座位
+     *
      * @param n
      * @param reservedSeats
      * @return
@@ -92,7 +93,7 @@ public class dcontest22 {
                     fr = false;
                 }
                 //最后一个座位访问结束， i减一，处理这一排
-                if (reservedSeats.length == i + 1){
+                if (reservedSeats.length == i + 1) {
                     i--;
                     preRow = row;
                     row = n + 1;
@@ -135,11 +136,85 @@ public class dcontest22 {
         return res;
     }
 
+    int[] arr = new int[1001];
+
+    /**
+     *用递归来实现自底向上，计算arr[x] 就先计算 arr[x / 2] (偶数)、arr[ x * 3 + 1](奇数)
+     * 若x大于1000，则不能装入arr数组
+     * @param x 参数
+     * @return 返回这个数的**权重**
+     */
+    int complete(int x) {
+        if (x > 1000 || arr[x] == 0) {
+            int y = 0;
+            if (x % 2 == 0) {
+                y = x / 2;
+            } else {
+                y = 3 * x + 1;
+            }
+            int r = complete(y) + 1;
+            if (x <= 1000) {
+                arr[x] = r;
+            }
+            return r;
+        }
+        // x小于1001 且 x的权重已经计算出来，则直接返回
+        return arr[x];
+    }
+
+    // 方便排序
+    class ff {
+        int index;
+        int val;
+
+        public ff(int index, int val) {
+            this.index = index;
+            this.val = val;
+        }
+    }
+
+    /**
+     * 1387. 将整数按权重排序
+     * @param lo
+     * @param hi
+     * @param k
+     * @return
+     */
+    public int getKth(int lo, int hi, int k) {
+        Arrays.fill(arr, 0);
+        arr[1] = 0;
+        // 首先将2的i次方计算出来
+        for (int i = 1; i < 10; i++) {
+            arr[(int) Math.pow(2, i)] = i;
+        }
+        // 机选剩余的数
+        for (int i = 3; i < 1001; i++) {
+            complete(i);
+        }
+        List<ff> list = new ArrayList<>();
+        // 将合适区间里的数挑出来，
+        for (int i = lo ; i <= hi; i++) {
+            list.add(new ff(i, arr[i]));
+        }
+        //按arr数组的值排个序，原本的下标已经有序，所以按值排序后，记得最终序列
+        list.sort(new Comparator<ff>() {
+            @Override
+            public int compare(ff o1, ff o2) {
+                return Integer.compare(o1.val, o2.val);
+            }
+        });
+
+//        Arrays.sort(arr, lo, hi); sort方法 [lo, hi)
+        //然后选第k - 1 个的下标
+        return list.get(k - 1).index;
+    }
+
     @Test
     public void test1() {
         dcontest22 obj = new dcontest22();
 //        System.out.println(obj.maxNumberOfFamilies(3\, new int[][]{{2,3}}));
-        System.out.println(obj.maxNumberOfFamilies(4, new int[][]{{4,3},{1,4},{4,6},{1,7}}));
+//        System.out.println(obj.maxNumberOfFamilies(4, new int[][]{{4, 3}, {1, 4}, {4, 6}, {1, 7}}));
+        System.out.println(obj.getKth(12, 15, 2));
     }
 }
 
