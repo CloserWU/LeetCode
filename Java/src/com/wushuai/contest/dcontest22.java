@@ -6,7 +6,9 @@ import java.util.*;
 
 /**
  * <p>dcontest22</p>
- * <p>description</p>
+ * <p>
+ *      Arrays.sort(arr, lo, hi); sort方法 [lo, hi)
+ * </p>
  *
  * @author closer
  * @version 1.0.0
@@ -139,8 +141,9 @@ public class dcontest22 {
     int[] arr = new int[1001];
 
     /**
-     *用递归来实现自底向上，计算arr[x] 就先计算 arr[x / 2] (偶数)、arr[ x * 3 + 1](奇数)
+     * 用递归来实现自底向上，计算arr[x] 就先计算 arr[x / 2] (偶数)、arr[ x * 3 + 1](奇数)
      * 若x大于1000，则不能装入arr数组
+     *
      * @param x 参数
      * @return 返回这个数的**权重**
      */
@@ -175,6 +178,7 @@ public class dcontest22 {
 
     /**
      * 1387. 将整数按权重排序
+     *
      * @param lo
      * @param hi
      * @param k
@@ -193,7 +197,7 @@ public class dcontest22 {
         }
         List<ff> list = new ArrayList<>();
         // 将合适区间里的数挑出来，
-        for (int i = lo ; i <= hi; i++) {
+        for (int i = lo; i <= hi; i++) {
             list.add(new ff(i, arr[i]));
         }
         //按arr数组的值排个序，原本的下标已经有序，所以按值排序后，记得最终序列
@@ -208,6 +212,97 @@ public class dcontest22 {
         //然后选第k - 1 个的下标
         return list.get(k - 1).index;
     }
+
+
+    //链表节点
+    class Node {
+        int val;
+        int l;
+        int r;
+
+        public Node(int val, int l, int r) {
+            this.val = val;
+            this.l = l;
+            this.r = r;
+        }
+    }
+
+    //优先队列节点
+    class Id {
+        int id;
+
+        public Id(int id) {
+            this.id = id;
+        }
+    }
+
+    // 双向链表
+    List<Node> list = null;
+
+    // 删除双向链表x节点，并更新其两侧节点
+    void del(int x) {
+        // 这里不需要更新i的左右指针，因为i已经不会再被使用了
+        Node left = list.get(list.get(x).l);
+        left.r = list.get(x).r;
+        Node right = list.get(list.get(x).r);
+        right.l = list.get(x).l;
+        list.set(list.get(x).l, left);
+        list.set(list.get(x).r, right);
+    }
+
+    /**
+     * 1388. 3n 块披萨
+     * 求在n个首尾相连的元素中，选取n/3个不相邻元素所能获得的最大值。
+     * 基于双向链表的贪心算法（且有反悔）
+     *  https://leetcode-cn.com/problems/pizza-with-3n-slices/solution/shuang-xiang-lian-biao-tan-xin-suan-fa-shi-jian-fu/
+     * @param slices
+     * @return
+     */
+    public int maxSizeSlices(int[] slices) {
+        int n = slices.length;
+        // 总共需要选k次
+        int k = n / 3;
+        list = new ArrayList<>();
+        // 优先记录双向链表val中从大到小的索引
+        Queue<Id> queue = new PriorityQueue<>(new Comparator<Id>() {
+            @Override
+            public int compare(Id o1, Id o2) {
+                return Integer.compare(list.get(o2.id).val, list.get(o1.id).val);
+            }
+        });
+        // 访问标志
+        List<Boolean> visit = new ArrayList<>(Collections.nCopies(n, true));
+        for (int i = 0; i < n; i++) {
+            list.add(new Node(slices[i], (n + i - 1) % n, (i + 1) % n));
+            queue.add(new Id(i));
+        }
+        int cnt = 0, ans = 0;
+        // 直到取了k次跳出
+        while (cnt < k) {
+            int id = queue.poll().id;
+            // 取一次
+            if (visit.get(id)) {
+                cnt++;
+                Node node = list.get(id);
+                // 累计取到的pizza
+                ans += node.val;
+                int l = node.l;
+                int r = node.r;
+                // 更新左右两端访问
+                visit.set(l, false);
+                visit.set(r, false);
+                // 带有返回操作，给这次选择留有余地
+                node.val = list.get(l).val + list.get(r).val - node.val;
+                list.set(id, node);
+                queue.add(new Id(id));
+                // 更新链表
+                del(l);
+                del(r);
+            }
+        }
+        return ans;
+    }
+
 
     @Test
     public void test1() {
