@@ -203,6 +203,131 @@ public class contest181 {
         return flag[0] || flag[1];
     }
 
+    /**
+     * 1392. 最长快乐前缀
+     * 方法一
+     * 字符串哈希 见 strhash.jpg
+     * https://leetcode-cn.com/problems/longest-happy-prefix/solution/zui-chang-kuai-le-qian-zhui-zi-fu-chuan-hashjian-j/
+     * 字符串种每个位置i， 计算[0,i]的哈希值，存到hash[i]中
+     * 对于求字符串的最大公共前后缀，字符串哈希很方便。
+     * 只需要O(n)一次遍历即可
+     * 字符串哈希公式：
+     * 对于子串S，和字符c
+     *      H(S + c) = (H(S) * P + value[c]) MOD M;
+     * 对于字串H(S + T) 和 字串H(S)
+     *      H(T) = (H(S + T) - H(S) * p(length(T)) MOD M;
+     *  hash[] 即为 H()
+     *  p[] 即为p(length())
+     *  hash[] 和 p[] 都用unsigned long long 存，溢出代表自动模2^64 即为M
+     *  P为131
+     *
+     *  字符串哈希在前后缀问题效果极佳
+     *  字符串哈希也能进行字符串模式匹配，但复杂度为O(n^2)，相当于传统暴力方法。
+     *
+     *  https://www.cnblogs.com/moyujiang/p/11213535.html
+     * @param s
+     * @return
+     */
+    public String longestPrefix(String s) {
+        // java种没有无符号数
+        /* Integer类
+        int compareUnsigned(int x, int y)
+        int  divideUnsigned(int dividend, int divisor)
+        int  parseUnsignedInt(String s)
+        int  parseUnsignedInt(String s, int radix)
+        int  remainderUnsigned(int dividend,  int divisor)
+        long  toUnsignedLong(int x)
+        String toUnsignedString(int i)
+        String toUnsignedString(int i, int radix)
+         */
+        /* c++
+        string longestPrefix(string s) {
+            int base = 131;
+            unsigned long long p[100002];
+            unsigned long long hash[10002];
+            p[0] = 1;
+            hash[0] = 0;
+            // 构建hash[] p[]
+            // H(S + c) = (H(S) * P + value[c]) MOD M;
+            for (int i = 1; i <= s.length(); i++) {
+                hash[i] = hash[i - 1] * bash + s[i - 1] - 'a' + 1;
+                p[i] = p[i - 1] * bash;
+            }
+            //pre为[0,i]子串的hash值
+            //suf为[len - i, len]字串的哈希值，但注意求suf时，根据图片里的公式描述，要计算P_Length,所以要计算p数组
+            // H(T) = (H(S + T) - H(S) * p(length(T)) MOD M;
+            for (int i = s.length() - 1; i >=1; i--) {
+                unsigned long long pre = hash[i];
+                unsigned long long suf = hash[s.length()] - hash[s.length() - i] * p[i];
+                if (pre == suf) {
+                    return s.substr(0, i);
+                }
+            }
+            return "";
+         }
+         */
+        return "";
+    }
+
+    class KMP {
+        int[] next = null;
+
+        void getNext(String pattern) {
+            next = new int[pattern.length() + 1];
+            next[0] = -1;
+            int i = 0, j = -1;
+            while (i < pattern.length()) {
+                if (j == -1 || pattern.charAt(i) == pattern.charAt(j)) {
+                    next[++i] = ++j;
+                } else {
+                    j = next[j];
+                }
+            }
+        }
+
+        // 在S种找到第一次P出现的位置
+        int match(String pattern, String source) {
+            getNext(pattern);
+            int i = 0;
+            int j = 0;
+            int sLen = source.length();
+            int pLen = pattern.length();
+            while (i < sLen && j < pLen) {
+                if (j == -1 || source.charAt(i) == pattern.charAt(j)) {
+                    i++;
+                    j++;
+                } else {
+                    j = next[j];
+                }
+            }
+            if (j == pLen) {
+                return i - j;
+            }
+            return -1;
+        }
+    }
+
+    /**
+     * 1392. 最长快乐前缀
+     * 方法二
+     * KMP， next数组的含义是，next[i]表示从p[0,i]字串的最大公共前后缀
+     * 例    a b a b a b
+     * next  0 0 1 2 3 4
+     *       l e e t c o d e l e e t
+     * next  0 0 0 0 0 0 0 0 1 2 3 4
+     * 所以next的最后一个元素即为所求
+     *
+     *
+     * https://segmentfault.com/a/1190000008575379?utm_medium=referral&utm_source=tuicool
+     * @param s
+     * @return
+     */
+    public String longestPrefix_v2(String s) {
+        KMP o = new KMP();
+        o.getNext(s);
+        return s.substring(0, o.next[s.length()]);
+    }
+
     @Test
     public void test1() {
         contest181 obj = new contest181();
@@ -216,6 +341,11 @@ public class contest181 {
         System.out.println(obj.hasValidPath(new int[][]{{4,1,3},{2,6,2},{6,1,5}}));
         System.out.println(obj.hasValidPath(new int[][]{{6,3,6},{4,5,2},{6,1,1}}));
         System.out.println(obj.hasValidPath(new int[][]{{3,4,3,2},{6,5,6,3},{4,1,1,5},{6,1,5,6}}));
+
+        System.out.println(obj.longestPrefix_v2("level"));
+        System.out.println(obj.longestPrefix_v2("ababab"));
+
+        System.out.println("aaaaaa".substring(0, 3));
     }
 }
 
