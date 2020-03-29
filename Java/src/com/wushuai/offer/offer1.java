@@ -6,7 +6,16 @@ import java.util.*;
 
 /**
  * <p>offer1</p>
- * <p>description</p>
+ * <p>
+ * ArrayList<String> list=new ArrayList<String>();
+ * String[] strarr = new String[list.size()];
+ * list.toArray(strarr);
+ * //String[] strarr = list.toArray(new String[list.size()]);
+ * <p>
+ * String[] s = {"a","b","c"};
+ * List list = java.util.Arrays.asList(s);
+ * ArrayList newList = new ArrayList<>(list)
+ * </p>
  *
  * @author closer
  * @version 1.0.0
@@ -298,13 +307,24 @@ public class offer1 {
             if (p.row + 1 < row) {
                 Point pd = new Point(p.row + 1, p.col);
                 if (!ps.contains(pd)) {
-                    ps.add(pd);
+                    ps.add(pd);  // 一个新状态
                     flag = Judge(pd, idx + 1);
+                    ps.remove(pd); //新状态失败，恢复原装状态
+                    if (flag) {
+                        return true;
+                    }
                 }
-                if (flag) {
-                    return true;
-                }
-                ps.remove(pd);
+                /* 这样写会有错误， 要想恢原装态，则必须紧跟，初始状态，中间若有其他代码则会导致错误
+                 if (!ps.contains(pd)) {
+                    ps.add(pd);  // 一个新状态
+                    flag = Judge(pd, idx + 1);
+                  }
+
+                  if (flag) {
+                        return true;
+                   }
+                   ps.remove(pd);  //新状态失败，恢复原装状态
+                 */
             }
 
             if (p.row - 1 >= 0) {
@@ -312,11 +332,12 @@ public class offer1 {
                 if (!ps.contains(pu)) {
                     ps.add(pu);
                     flag = Judge(pu, idx + 1);
+                    ps.remove(pu);
+                    if (flag) {
+                        return true;
+                    }
                 }
-                if (flag) {
-                    return true;
-                }
-                ps.remove(pu);
+
             }
 
             if (p.col - 1 >= 0) {
@@ -324,11 +345,11 @@ public class offer1 {
                 if (!ps.contains(pl)) {
                     ps.add(pl);
                     flag = Judge(pl, idx + 1);
+                    ps.remove(pl);
+                    if (flag) {
+                        return true;
+                    }
                 }
-                if (flag) {
-                    return true;
-                }
-                ps.remove(pl);
             }
 
             if (p.col + 1 < col) {
@@ -336,11 +357,11 @@ public class offer1 {
                 if (!ps.contains(pr)) {
                     ps.add(pr);
                     flag = Judge(pr, idx + 1);
+                    ps.remove(pr);
+                    if (flag) {
+                        return true;
+                    }
                 }
-                if (flag) {
-                    return true;
-                }
-                ps.remove(pr);
             }
         }
         return false;
@@ -372,17 +393,192 @@ public class offer1 {
         return false;
     }
 
+    /**
+     * 面试题13. 机器人的运动范围
+     *
+     * @param m
+     * @param n
+     * @param k
+     * @return
+     */
+    public int movingCount(int m, int n, int k) {
+        if (k == 0) {
+            return 1;
+        }
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < 9; i++) {
+            map.put(i, 9);
+        }
+        map.put(9, 18);
+        map.put(10, 28);
+        map.put(11, 38);
+        map.put(12, 48);
+        map.put(13, 58);
+        map.put(14, 68);
+        map.put(15, 78);
+        map.put(16, 88);
+        map.put(17, 98);
+        map.put(18, 107);
+        map.put(19, 117);
+        map.put(20, 127);
+        int res = 0;
+        m = Math.min(m, map.get(k) + 1);
+        n = Math.min(n, map.get(k) + 1);
+        int[][] board = new int[m][n];
+        int tmp = map.get(k) / 10 + 1;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < Math.min((tmp - i / 10) * 10, n); j++) {
+                board[i][j] = i / 100 + (i % 100) / 10 + (i % 100) % 10;
+                board[i][j] += j / 100 + (j % 100) / 10 + (j % 100) % 10;
+                if (board[i][j] <= k) {
+                    res++;
+                }
+            }
+        }
+        return res;
+    }
+
+    int m, n, k;
+    boolean[][] visited;
+
+    /**
+     * 面试题13. 机器人的运动范围
+     * DFS
+     * <p>
+     * https://leetcode-cn.com/problems/ji-qi-ren-de-yun-dong-fan-wei-lcof/solution/mian-shi-ti-13-ji-qi-ren-de-yun-dong-fan-wei-dfs-b/
+     *
+     * @param m
+     * @param n
+     * @param k
+     * @return
+     */
+    public int movingCount_v2(int m, int n, int k) {
+        this.m = m;
+        this.n = n;
+        this.k = k;
+        this.visited = new boolean[m][n];
+        return dfs(0, 0, 0, 0);
+    }
+
+    public int dfs(int i, int j, int si, int sj) {
+        if (i < 0 || i >= m || j < 0 || j >= n || k < si + sj || visited[i][j]) {
+            return 0;
+        }
+        visited[i][j] = true;
+        return 1
+                + dfs(i + 1, j, (i + 1) % 10 != 0 ? si + 1 : si - 8, sj)
+                + dfs(i, j + 1, si, (j + 1) % 10 != 0 ? sj + 1 : sj - 8);
+    }
+
+    /**
+     * 面试题14- I. 剪绳子
+     *
+     * @param n
+     * @return
+     */
+    public int cuttingRope(int n) {
+        int[] dp = new int[n + 1];
+        dp[0] = 1;
+        dp[1] = 1;
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j < i; j++) {
+                dp[i] = Math.max(dp[i], dp[j] * (i - j));
+                dp[i] = Math.max(dp[i], j * (i - j));
+            }
+        }
+        return dp[n];
+    }
+
+    /**
+     * 面试题14- II. 剪绳子 II
+     * <p>
+     * n     乘积     子数字
+     * 2       1       1 1
+     * 3       2       1 2
+     * 4       4       2 2
+     * 5       6       2 3
+     * 6       9       3 3
+     * 7       12      2 2 3
+     * 8       18      2 3 3
+     * 9       27      3 3 3
+     * 10      36      2 2 3 3
+     * 11      54      2 3 3 3
+     * 12      81      3 3 3 3
+     * 13      108     2 2 3 3 3
+     * 14      162     2 3 3 3 3
+     * 15      243     3 3 3 3 3
+     * 16      324     2 2 3 3 3 3
+     * 17      486     2 3 3 3 3 3
+     * 18      729     3 3 3 3 3 3
+     * 19      972     2 2 3 3 3 3 3
+     * 20      1458    2 3 3 3 3 3 3
+     * 21      2187    3 3 3 3 3 3 3
+     * 22      2916    2 2 3 3 3 3 3 3
+     * 23      4374    2 3 3 3 3 3 3 3
+     * 24      6561    3 3 3 3 3 3 3 3
+     * 25      8748    2 2 3 3 3 3 3 3 3
+     * 26      13122   2 3 3 3 3 3 3 3 3
+     * 27      19683   3 3 3 3 3 3 3 3 3
+     * 28      26244   2 2 3 3 3 3 3 3 3 3
+     *
+     * @param n
+     * @return
+     */
+    public int cuttingRope_v2(int n) {
+        if (n == 2) {
+            return 1;
+        }
+        if (n == 3) {
+            return 2;
+        }
+        long res = 1;
+        while (n > 4) {
+            res = res * 3 % 1000000007;
+            n -= 3;
+        }
+        return (int) (res * n % 1000000007);
+    }
+
+    /**
+     * 面试题15. 二进制中1的个数
+     *
+     * bitCount统计整数的二进制表达式中的bit位为1的位数（汉明重量）
+     * jdk1.7
+     * public static int bitCount(int i) {
+     *         i = i - ((i >>> 1) & 0x55555555);
+     *         i = (i & 0x33333333) + ((i >>> 2) & 0x33333333);
+     *         i = (i + (i >>> 4)) & 0x0f0f0f0f;
+     *         i = i + (i >>> 8);
+     *         i = i + (i >>> 16);
+     *         return i & 0x3f;
+     * }
+     * @param n
+     * @return
+     */
+    public int hammingWeight(int n) {
+        return Integer.bitCount(n);
+    }
+
     @Test
     public void test1() {
         offer1 obj = new offer1();
 //        obj.buildTree(new int[]{3, 9, 20, 15, 7}, new int[]{9, 3, 15, 20, 7});
 //        obj.buildTree(new int[]{1, 2, 8, 3, 5, 7, 6, 4, 9}, new int[]{8, 3, 2, 7, 5, 6, 1, 4, 9});
 //        obj.buildTree(new int[]{1, 2, 4, 8, 9, 5, 10, 3, 6, 7}, new int[]{8, 4, 9, 2, 10, 5, 1, 6, 3, 7});
-        System.out.println(obj.exist(new char[][]{{'A','B','C','E'},{'S','F','C','S'},{'A','D','E','E'}}, "ABCCEC"));
-        System.out.println(obj.exist(new char[][]{{'A','B'},{'C','D'}}, "ABCD"));
-        System.out.println(obj.exist(new char[][]{{'A','B'}}, "AB"));
-        System.out.println(obj.exist(new char[][]{{'A','B'}}, "BA"));
-        System.out.println(obj.exist(new char[][]{{'A','A'},{'A','A'}}, "AAAAAA"));
+//        System.out.println(obj.exist(new char[][]{{'A', 'B', 'C', 'E'}, {'S', 'F', 'C', 'S'}, {'A', 'D', 'E', 'E'}}, "ABCCEC"));
+//        System.out.println(obj.exist(new char[][]{{'A','B'},{'C','D'}}, "ABCD"));
+//        System.out.println(obj.exist(new char[][]{{'A','B'}}, "AB"));
+//        System.out.println(obj.exist(new char[][]{{'A','B'}}, "BA"));
+//        System.out.println(obj.exist(new char[][]{{'A','A'},{'A','A'}}, "AAAAA"));
+//        System.out.println(obj.movingCount(16, 8, 4));
+//        System.out.println(obj.movingCount(2, 3, 1));
+//        System.out.println(obj.movingCount(3, 1, 0));
+//        System.out.println(obj.movingCount(14, 8, 10));
+//        System.out.println(obj.movingCount(100, 100, 10));
+//        System.out.println(obj.movingCount(3, 8, 5));
+//        System.out.println(Arrays.toString(obj.cuttingRope(58)));
+        System.out.println(obj.hammingWeight(00000000000000000000000000001011));
     }
 }
+
 
