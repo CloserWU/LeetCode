@@ -97,8 +97,56 @@ public class offer2 {
      * @return
      */
     public boolean isNumber(String s) {
-//"^(\\+|-)?([0-9]*\\.?[0-9]*)(e(\\+|-)?[0-9]+)?$"
         return s.matches("^(\\+|-)?(([0-9]*\\.[0-9]+)|([0-9]+\\.[0-9]*)|[0-9]+)(e(\\+|-)?[0-9]+)?$");
+    }
+
+    public class TreeNode {
+        int val;
+        TreeNode left;
+        TreeNode right;
+
+        TreeNode(int x) {
+            val = x;
+        }
+    }
+
+    boolean Judge(TreeNode A, TreeNode B) {
+        if (B == null && A == null) {
+            return true;
+        }
+        if (B != null && A == null) {
+            return false;
+        }
+        if (B == null) {
+            return true;
+        }
+        if (A.val == B.val) {
+            return Judge(A.left, B.left) && Judge(A.right, B.right);
+        }
+        return false;
+    }
+
+    /**
+     * 面试题26. 树的子结构
+     *
+     * @param A
+     * @param B
+     * @return
+     */
+    public boolean isSubStructure(TreeNode A, TreeNode B) {
+        if (B == null && A == null) {
+            return false;
+        }
+        if (B == null || A == null) {
+            return false;
+        }
+        if (A.val == B.val) {
+            boolean f = Judge(A.left, B.left) && Judge(A.right, B.right);
+            if (f) {
+                return true;
+            }
+        }
+        return isSubStructure(A.left, B) || isSubStructure(A.right, B);
     }
 
     @Test
