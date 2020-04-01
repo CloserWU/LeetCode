@@ -17,7 +17,7 @@ import java.util.*;
  * 取队尾元素并删除	    无	                            E removeLast() / E pollLast()
  * 取队尾元素但不删除	无	                            E getLast() / E peekLast()
  * </p>
- *
+ * <p>
  * 面试题32 - II. 从上到下打印二叉树 II <层序遍历>
  * 面试题34. 二叉树中和为某一值的路径  -> Path  <根到叶子节点的路径集合>
  *
@@ -203,7 +203,7 @@ public class offer3 {
 
     void Judge(TreeNode root, List<Integer> list, int sum) {
         if (root != null) {
-            List<Integer> tmp  =new ArrayList<>();
+            List<Integer> tmp = new ArrayList<>();
             list.add(root.val);
             if (root.left == null && root.right == null) {
                 if (sum + root.val == this.sum) {
@@ -220,7 +220,7 @@ public class offer3 {
 
     void Path(TreeNode root, List<Integer> list) {
         if (root != null) {
-            List<Integer> tmp  =new ArrayList<>();
+            List<Integer> tmp = new ArrayList<>();
             list.add(root.val);
             if (root.left == null && root.right == null) {
                 res.add(list);
@@ -246,9 +246,349 @@ public class offer3 {
         return this.res;
     }
 
+
+    class Node {
+        int val;
+        Node next;
+        Node random;
+
+        public Node(int val) {
+            this.val = val;
+            this.next = null;
+            this.random = null;
+        }
+    }
+
+    /**
+     * 面试题35. 复杂链表的复制
+     * 复制一个新的节点在原有节点之后，如 1 -> 2 -> 3 -> null 复制完就是 1 -> 1 -> 2 -> 2 -> 3 - > 3 -> null
+     * 从头开始遍历链表，通过 cur.next.random = cur.random.next 可以将复制节点的随机指针串起来，当然需要判断 cur.random 是否存在
+     * 将复制完的链表一分为二 根据以上信息，我们不难写出以下代码
+     *
+     * @param head
+     * @return
+     */
+    public Node copyRandomList(Node head) {
+        if (head == null) {
+            return null;
+        }
+        Node tmp = head;
+        while (head != null) {
+            Node copy = new Node(head.val);
+            copy.next = head.next;
+            head.next = copy;
+            head = head.next.next;
+        }
+        head = tmp;
+        int i = 0;
+        while (head != null) {
+            if (head.random != null) {
+                head.next.random = head.random.next;
+            }
+            head = head.next.next;
+        }
+        Node copyHead = tmp.next;
+        head = tmp;
+        Node curCopy = head.next;
+        while (head != null) {
+            head.next = head.next.next;
+            head = head.next;
+            if (curCopy.next != null) {
+                curCopy.next = curCopy.next.next;
+                curCopy = curCopy.next;
+            }
+        }
+        return copyHead;
+    }
+
+    class NNode {
+        public int val;
+        public NNode left;
+        public NNode right;
+
+        public NNode() {
+        }
+
+        public NNode(int _val) {
+            val = _val;
+        }
+
+        public NNode(int _val, NNode _left, NNode _right) {
+            val = _val;
+            left = _left;
+            right = _right;
+        }
+    }
+
+    NNode head, pre, tail;
+
+    void inOrder(NNode root) {
+        if (root == null) {
+            return;
+        }
+        inOrder(root.left);
+        if (pre == null) {
+            head = root;
+        } else {
+            pre.right = root;
+        }
+        root.left = pre;
+        pre = root;
+        tail = root;
+        inOrder(root.right);
+    }
+
+    /**
+     * 面试题36. 二叉搜索树与双向链表
+     *
+     * @param root
+     * @return
+     */
+    public NNode treeToDoublyList(NNode root) {
+        if (root == null) {
+            return null;
+        }
+        inOrder(root);
+        head.left = tail;
+        tail.right = head;
+        return head;
+    }
+
+    /**
+     * 面试题37. 序列化二叉树
+     */
+    class Codec {
+
+        // Encodes a tree to a single string.
+        public String serialize(TreeNode root) {
+            if (root == null) {
+                return "[]";
+            }
+            List<Integer> list = new ArrayList<>();
+            list.add(root.val);
+            Queue<TreeNode> queue = new LinkedList<>();
+            queue.add(root);
+            while (!queue.isEmpty()) {
+                root = queue.poll();
+                if (root.left != null) {
+                    queue.add(root.left);
+                    list.add(root.left.val);
+                } else {
+                    list.add(null);
+                }
+                if (root.right != null) {
+                    queue.add(root.right);
+                    list.add(root.right.val);
+                } else {
+                    list.add(null);
+                }
+            }
+            StringBuilder sb = new StringBuilder();
+            int idx = 0;
+            for (int i = list.size() - 1; i >= 0; i--) {
+                if (list.get(i) != null) {
+                    idx = i + 1;
+                    break;
+                }
+            }
+            sb.append('[');
+            for (int i = 0; i < idx; i++) {
+                if (i != 0) {
+                    sb.append(',');
+                }
+                sb.append(list.get(i));
+            }
+            sb.append(']');
+            return sb.toString();
+        }
+
+        // Decodes your encoded data to tree.
+        public TreeNode deserialize(String data) {
+            String s = data.substring(1, data.length() - 1);
+            String[] split = s.split(",");
+            int idx = 0;
+            if ("".equals(split[0])) {
+                return null;
+            }
+            TreeNode head = new TreeNode(Integer.parseInt(split[idx++]));
+            Queue<TreeNode> queue = new LinkedList<>();
+            queue.add(head);
+            while (!queue.isEmpty()) {
+                TreeNode root = queue.poll();
+                if (idx < split.length) {
+                    String left = split[idx++];
+                    TreeNode leftNode = null;
+                    if (!"null".equals(left)) {
+                        leftNode = new TreeNode(Integer.parseInt(left));
+                        queue.add(leftNode);
+                        root.left = leftNode;
+                    }
+                }
+                if (idx < split.length) {
+                    String right = split[idx++];
+                    TreeNode rightNode = null;
+                    if (!"null".equals(right)) {
+                        rightNode = new TreeNode(Integer.parseInt(right));
+                        queue.add(rightNode);
+                        root.right = rightNode;
+                    }
+                }
+            }
+            return head;
+        }
+    }
+
+    List<String> list = new ArrayList<>();
+    char[] c = null;
+
+    void swap(int a, int b) {
+        char ch = c[a];
+        c[a] = c[b];
+        c[b] = ch;
+    }
+
+    void next_permutation(int x) {
+        if (x == c.length - 1) {
+            list.add(new String(c));
+            return;
+        }
+        Set<Character> set = new HashSet<>();
+        for (int i = x; i < c.length; i++) {
+            if (set.contains(c[i])) {
+                continue;
+            }
+            set.add(c[i]);
+            swap(i, x);  // 交换
+            next_permutation(x + 1);  // 求[i..-1]字串的排列
+            swap(i, x);  // 恢复
+        }
+    }
+
+    /**
+     * 面试题38. 字符串的排列
+     * <p>
+     * 交换字符 i 于其他字符的位置， 然后求 [i,-1]字串的排列， 然后恢复与 i 交换字符的位置，换到下一个字符进行交换
+     *
+     * @param s
+     * @return
+     */
+    public String[] permutation(String s) {
+        c = s.toCharArray();
+        next_permutation(0);
+        return list.toArray(new String[list.size()]);
+    }
+
+
+    /**
+     * 面试题41. 数据流中的中位数
+     * <p>
+     * Your MedianFinder object will be instantiated and called as such:
+     * MedianFinder obj = new MedianFinder();
+     * obj.addNum(num);
+     * double param_2 = obj.findMedian();
+     * <p>
+     * 小顶堆 + 大顶堆 = 全部数据流
+     * 大顶堆 - 小顶堆 <= 1
+     * 中位数 = （odd）小顶堆头 + 大顶堆头 / 2； （even） 大顶堆头
+     */
+    class MedianFinder {
+        Queue<Integer> up = new PriorityQueue<>(Collections.reverseOrder());
+        Queue<Integer> lo = new PriorityQueue<>();
+
+        /**
+         * initialize your data structure here.
+         */
+        public MedianFinder() {
+
+        }
+
+        public void addNum(int num) {
+            lo.add(num);
+            up.add(lo.poll());
+            // 若大顶堆比小顶堆多2个了
+            if (lo.size() + 1 < up.size()) {
+                lo.add(up.poll());
+            }
+        }
+
+        public double findMedian() {
+            if ((up.size() + lo.size()) % 2 == 1) {
+                return up.peek();
+            } else {
+                return (double) (lo.peek() + up.peek()) / 2.0;
+            }
+        }
+    }
+
+    int dfs_countDigitOne(int n) {
+        if (n <= 0) {
+            return 0;
+        }
+        String s = String.valueOf(n);
+        int high = s.charAt(0) - '0';
+        int pow = (int) Math.pow(10, s.length() - 1);
+        int last = n - pow * high;
+        if (high == 1) {
+            // 最高位是1，如1234, 此时pow = 1000,那么结果由以下三部分构成：
+            // (1) dfs(pow - 1)代表[0,999]中1的个数;
+            // (2) dfs(last)代表234中1出现的个数;
+            // (3) last+1代表固定高位1有多少种情况。
+            return dfs_countDigitOne(pow - 1) + dfs_countDigitOne(last) + last + 1;
+        } else {
+            // 最高位不为1，如2234，那么结果也分成以下三部分构成：
+            // (1) pow代表固定高位1，有多少种情况;
+            // (2) high * dfs(pow - 1)代表999以内和1999以内低三位1出现的个数;
+            // (3) dfs(last)同上。
+            return high * dfs_countDigitOne(pow - 1) + dfs_countDigitOne(last) + pow;
+        }
+    }
+
+    /**
+     * 面试题43. 1～n整数中1出现的次数
+     *
+     * https://leetcode-cn.com/problems/1nzheng-shu-zhong-1chu-xian-de-ci-shu-lcof/solution/java-di-gui-qiu-jie-by-npe_tle-2/
+     *
+     * @param n
+     * @return
+     */
+    public int countDigitOne(int n) {
+        return dfs_countDigitOne(n);
+    }
+
+
+    /** 1的个数
+     * 《编程之美》上这样说:
+     *
+     *     设N = abcde ,其中abcde分别为十进制中各位上的数字。
+     *     如果要计算百位上1出现的次数，它要受到3方面的影响：百位上的数字，百位以下（低位）的数字，百位以上（高位）的数字。
+     *     如果百位上数字为0，百位上可能出现1的次数由更高位决定。比如：12013，则可以知道百位出现1的情况可能是：100~199，1100~1199,2100~2199，，...，11100~11199，一共1200个。可以看出是由更高位数字（12）决定，并且等于更高位数字（12）乘以 当前位数（100）。注意：高位数字不包括当前位
+     *     如果百位上数字为1，百位上可能出现1的次数不仅受更高位影响还受低位影响。比如：12113，则可以知道百位受高位影响出现的情况是：100~199，1100~1199,2100~2199，，....，11100~11199，一共1200个。和上面情况一样，并且等于更高位数字（12）乘以 当前位数（100）。但同时它还受低位影响，百位出现1的情况是：12100~12113,一共14个，等于低位数字（13）+1。 注意：低位数字不包括当前数字
+     *     如果百位上数字大于1（2~9），则百位上出现1的情况仅由更高位决定，比如12213，则百位出现1的情况是：100~199,1100~1199，2100~2199，...，11100~11199,12100~12199,一共有1300个，并且等于更高位数字+1（12+1）乘以当前位数（100）
+
+     int num=n,i=1,s=0;
+
+     while(num)              //分别计算个、十、百......千位上1出现的次数，再求和。
+     {
+     if(num%10==0)
+     s=s+(num/10)*i;
+
+     if(num%10==1)
+     s=s+(num/10)*i+(n%i)+1;
+
+     if(num%10>1)
+     s=s+ceil(num/10.0)*i;
+
+     num=num/10;
+     i=i*10;
+     }
+     return s;
+     */
+
     @Test
     public void test1() {
         offer3 o = new offer3();
+        Codec codec = new Codec();
+        System.out.println(codec.serialize(codec.deserialize("[1,2,3,null,null,4,5]")));
     }
 }
 
