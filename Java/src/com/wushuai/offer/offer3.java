@@ -520,6 +520,31 @@ public class offer3 {
         }
     }
 
+    /**
+     * 面试题42. 连续子数组的最大和
+     * <p>
+     * 1.义一个函数f(n) => 到第n个数为止的子数列的最大和，存在一个递推关系f(n) = max(f(n-1) + A[n], A[n])
+     * => 到第n个点为止的子数列最大和，即为，到第n-1个点为止的子数列最大和加上第n个点的值 与 第n个点的值 的最大值;
+     * 2.将这些最大和保存下来后，取最大的那个就是，最大子数组和。因为最大连续子数组 等价于 最大的以n个数为结束点的子数列和
+     *
+     * @param nums
+     * @return
+     */
+    public int maxSubArray(int[] nums) {
+        if (nums.length == 0) {
+            return 0;
+        }
+        int res = Integer.MIN_VALUE;
+        int[] dp = new int[nums.length + 1];
+        dp[0] = 0;
+        for (int i = 1; i < dp.length; i++) {
+            dp[i] = Math.max(dp[i - 1] + nums[i - 1], nums[i - 1]);
+            res = Math.max(dp[i], res);
+        }
+        return res;
+    }
+
+
     int dfs_countDigitOne(int n) {
         if (n <= 0) {
             return 0;
@@ -545,7 +570,7 @@ public class offer3 {
 
     /**
      * 面试题43. 1～n整数中1出现的次数
-     *
+     * <p>
      * https://leetcode-cn.com/problems/1nzheng-shu-zhong-1chu-xian-de-ci-shu-lcof/solution/java-di-gui-qiu-jie-by-npe_tle-2/
      *
      * @param n
@@ -584,11 +609,59 @@ public class offer3 {
      return s;
      */
 
+    /**
+     * 面试题44. 数字序列中某一位的数字
+     * 0 -> 
+     * 1~9 -> 9*1 = 9
+     * 10~99 -> 90*2 = 180
+     * 100~999 -> 900*3 = 2700
+     *
+     * 比如输入的 n 是 365：
+     *
+     * 经过第一步计算我们可以得到第 365 个数字表示的数是三位数，n=365−9−90×2=176，digtis = 3。
+     * 这时 n=1176 表示目标数字是三位数中的第 176176 个数字。
+     * 我们设目标数字所在的数为 number，计算得到 number=100+176/3=158，
+     * idx 是目标数字在 number 中的索引，如果 idx = 0，表示目标数字是 number 中的最后一个数字。
+     * 根据步骤2，我们可以计算得到 idx = n % digits = 176 % 3 = 2，
+     * 说明目标数字应该是 number = 158 中的第二个数字，即输出为 5。
+     *
+     * @param n
+     * @return
+     */
+    public int findNthDigit(int n) {
+        List<Long> list = new ArrayList<>(Collections.nCopies(11, 0L));
+        for (int i = 1; i <= 10; i++) {
+            list.set(i, (long) (Math.pow(10, i - 1) * 9 * i));
+        }
+        Long p = 0L;
+        for (int i = 1; i <= 10; i++) {
+            p += list.get(i);
+            if (p >= n) {
+                n -= (int) (p - list.get(i));
+                int number = (int) Math.pow(10, i - 1) + n / i;
+                if (n % i == 0) {
+                    number--;
+                }
+                if (i == 1) {
+                    number = n;
+                }
+                return String.valueOf(number).charAt(((n % i) + i - 1) % i) - '0';
+            }
+        }
+        return 0;
+    }
+
     @Test
     public void test1() {
         offer3 o = new offer3();
         Codec codec = new Codec();
         System.out.println(codec.serialize(codec.deserialize("[1,2,3,null,null,4,5]")));
+//        System.out.println(o.maxSubArray(new int[]{-2, 1, -3, 4, -1, 2, 1, -5, 4}));
+        System.out.println(Integer.MAX_VALUE);
+        System.out.println(o.findNthDigit(9));
+        System.out.println(o.findNthDigit(11));
+        System.out.println(o.findNthDigit(2723));
+        System.out.println(o.findNthDigit(365));
     }
 }
 
