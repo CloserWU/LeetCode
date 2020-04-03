@@ -611,13 +611,13 @@ public class offer3 {
 
     /**
      * 面试题44. 数字序列中某一位的数字
-     * 0 -> 
+     * 0 ->
      * 1~9 -> 9*1 = 9
      * 10~99 -> 90*2 = 180
      * 100~999 -> 900*3 = 2700
-     *
+     * <p>
      * 比如输入的 n 是 365：
-     *
+     * <p>
      * 经过第一步计算我们可以得到第 365 个数字表示的数是三位数，n=365−9−90×2=176，digtis = 3。
      * 这时 n=1176 表示目标数字是三位数中的第 176176 个数字。
      * 我们设目标数字所在的数为 number，计算得到 number=100+176/3=158，
@@ -649,6 +649,30 @@ public class offer3 {
             }
         }
         return 0;
+    }
+
+    /**
+     * 面试题45. 把数组排成最小的数
+     *
+     * @param nums
+     * @return
+     */
+    public String minNumber(int[] nums) {
+        List<String> list = new ArrayList<>();
+        for (int num : nums) {
+            list.add(String.valueOf(num));
+        }
+        list.sort(new Comparator<String>() {
+            @Override
+            public int compare(String s1, String s2) {
+                return (s1 + s2).compareTo(s2 + s1);
+            }
+        });
+        StringBuilder sb = new StringBuilder();
+        for (String s : list) {
+            sb.append(s);
+        }
+        return sb.toString();
     }
 
     @Test
