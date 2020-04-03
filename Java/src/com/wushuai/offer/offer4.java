@@ -233,13 +233,129 @@ public class offer4 {
         return res;
     }
 
+
+    /**
+     * 面试题56 - I. 数组中数字出现的次数
+     * <p>
+     * https://leetcode-cn.com/problems/shu-zu-zhong-shu-zi-chu-xian-de-ci-shu-lcof/solution/zhi-chu-xian-yi-ci-de-shu-xi-lie-wei-yun-suan-by-a/
+     *
+     * @param nums
+     * @return
+     */
+    public int[] singleNumbers(int[] nums) {
+//        所有数字异或的结果
+        int ret = 0;
+        int a = 0, b = 0;
+        for (int i = 0; i < nums.length; i++) {
+            ret ^= nums[i];
+        }
+//        找到第一位不是0的
+        int h = 1;
+        while ((ret & h) == 0) {
+            h <<= 1;
+        }
+        for (int i = 0; i < nums.length; i++) {
+//             根据该位是否为0将其分为两组
+            if ((h & nums[i]) == 0) {
+                a ^= nums[i];
+            } else {
+                b ^= nums[i];
+            }
+        }
+        return new int[]{a, b};
+    }
+
+
+    /**
+     * 面试题56 - II. 数组中数字出现的次数 II
+     * <p>
+     * https://leetcode-cn.com/problems/shu-zu-zhong-shu-zi-chu-xian-de-ci-shu-lcof/solution/zhi-chu-xian-yi-ci-de-shu-xi-lie-wei-yun-suan-by-a/
+     *
+     * @param nums
+     * @return
+     */
+    public int singleNumber(int[] nums) {
+        int res = 0;
+        for (int i = 0; i < 32; i++) {
+//          记录当前 bit 有多少个1
+            int cnt = 0;
+//           记录当前要操作的 bit
+            int bit = 1 << i;
+            for (int j = 0; j < nums.length; j++) {
+                if ((nums[j] & bit) != 0) {
+                    cnt += 1;
+                }
+            }
+//            不等于0说明唯一出现的数字在这个 bit 上是1
+            if (cnt % 3 != 0) {
+                res |= bit;
+            }
+        }
+        return res;
+    }
+
+    /**
+     * 面试题59 - II. 队列的最大值
+     * Your MaxQueue object will be instantiated and called as such:
+     * MaxQueue obj = new MaxQueue();
+     * int param_1 = obj.max_value();
+     * obj.push_back(value);
+     * int param_3 = obj.pop_front();
+     *
+     * 最大值出队后，无法知道队列里的下一个最大值。
+     * 我们只需记住当前最大值出队后，队列里的下一个最大值即可。
+     * 具体方法是使用一个双端队列 deque，在每次入队时，如果 deque 队尾元素小于即将入队的元素 value，
+     * 则将小于 value 的元素全部出队后，再将 value 入队；否则直接入队。
+     * https://leetcode-cn.com/problems/dui-lie-de-zui-da-zhi-lcof/solution/ru-he-jie-jue-o1-fu-za-du-de-api-she-ji-ti-by-z1m/
+     *
+     * ![gif](https://pic.leetcode-cn.com/9d038fc9bca6db656f81853d49caccae358a5630589df304fc24d8999777df98-fig3.gif)
+     */
+    class MaxQueue {
+        Queue<Integer> queue = null;
+        int[] deque = null;
+        int begin, end;
+
+        public MaxQueue() {
+            queue = new LinkedList<>();
+            deque = new int[10000];
+            begin = 0;
+            end = -1;
+        }
+
+        public int max_value() {
+            if (queue.isEmpty()) {
+                return -1;
+            }
+            return deque[begin];
+        }
+
+        public void push_back(int value) {
+            if (end != -1 && value > deque[end]) {
+                while (end >= begin && deque[end] < value) {
+                    end--;
+                }
+            }
+            deque[++end] = value;
+            queue.add(value);
+        }
+
+        public int pop_front() {
+            if (queue.isEmpty()) {
+                return -1;
+            }
+            if (queue.peek() == deque[begin]) {
+                begin++;
+            }
+            return queue.poll();
+        }
+    }
+
+
     @Test
     public void test1() {
         offer4 o = new offer4();
         System.out.println(o.translateNum(25));
         System.out.println(o.lengthOfLongestSubstring("acbhasgfshjdafkasdhgfsacdbkh"));
-        System.out.println(o.lengthOfLongestSubstring("0123456789012345678901234567"));
-
     }
 }
 
