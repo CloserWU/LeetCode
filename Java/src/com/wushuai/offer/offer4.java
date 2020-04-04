@@ -295,19 +295,84 @@ public class offer4 {
     }
 
     /**
+     * 面试题59 - I. 滑动窗口的最大值
+     *
+     * @param nums
+     * @param k
+     * @return
+     */
+    public int[] maxSlidingWindow(int[] nums, int k) {
+        if (k == 0){
+            return new int[]{};
+        }
+        List<Integer> list = new ArrayList<>();
+        for (int i = 0; i < nums.length - k + 1; i++) {
+            int max = Integer.MIN_VALUE;
+            for (int j = i; j < k; j++) {
+                max = Math.max(max, nums[j]);
+            }
+            list.add(max);
+        }
+        int[] res = new int[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            res[i] = list.get(i);
+        }
+        return res;
+    }
+
+    /**
+     * 线性复杂度实现
+     * 记录队列的最大值，思想方法同 面试题59 - II. 队列的最大值 maxQueue.gif
+     * @param nums
+     * @param k
+     * @return
+     */
+    public int[] maxSlidingWindow_v2(int[] nums, int k) {
+        if (k == 0){
+            return new int[]{};
+        }
+        List<Integer> list = new ArrayList<>();
+        Queue<Integer> queue = new LinkedList<>();
+        Deque<Integer> maxQueue = new LinkedList<>();
+        for (int i = 0; i < nums.length; i++) {
+            queue.add(nums[i]);
+            if (maxQueue.isEmpty() || maxQueue.getLast() > nums[i]) {
+                maxQueue.addLast(nums[i]);
+            } else {
+                while (!maxQueue.isEmpty() && maxQueue.getLast() < nums[i]) {
+                    maxQueue.removeLast();
+                }
+                maxQueue.addLast(nums[i]);
+            }
+            if (queue.size() == k) {
+                list.add(maxQueue.getFirst());
+                if (queue.peek().equals(maxQueue.getFirst())) {
+                    maxQueue.removeFirst();
+                }
+                queue.poll();
+            }
+        }
+        int[] res = new int[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            res[i] = list.get(i);
+        }
+        return res;
+    }
+
+    /**
      * 面试题59 - II. 队列的最大值
      * Your MaxQueue object will be instantiated and called as such:
      * MaxQueue obj = new MaxQueue();
      * int param_1 = obj.max_value();
      * obj.push_back(value);
      * int param_3 = obj.pop_front();
-     *
+     * <p>
      * 最大值出队后，无法知道队列里的下一个最大值。
      * 我们只需记住当前最大值出队后，队列里的下一个最大值即可。
      * 具体方法是使用一个双端队列 deque，在每次入队时，如果 deque 队尾元素小于即将入队的元素 value，
      * 则将小于 value 的元素全部出队后，再将 value 入队；否则直接入队。
      * https://leetcode-cn.com/problems/dui-lie-de-zui-da-zhi-lcof/solution/ru-he-jie-jue-o1-fu-za-du-de-api-she-ji-ti-by-z1m/
-     *
+     * <p>
      * ![gif](https://pic.leetcode-cn.com/9d038fc9bca6db656f81853d49caccae358a5630589df304fc24d8999777df98-fig3.gif)
      */
     class MaxQueue {
@@ -350,12 +415,114 @@ public class offer4 {
         }
     }
 
+    public long factorial(long number) {
+        /*
+        int[] fab = new int[11];
+        fab[0] = 1;
+        for (int i = 1; i < 11; i++) {
+            fab[i] = fab[i - 1] * i;
+        }
+         */
+        if (number <= 1) {
+            return 1;
+        }
+        return number * factorial(number - 1);
+    }
+
+
+    /**
+     * TLE  时间复杂度太高O(n*6^n) 指数 n=10 时， 执行需要8s
+     * 单纯使用递归搜索解空间的时间复杂度为 6^n，会造成超时错误，因为存在重复子结构
+     * getCount(2,4)=getCount(1,1)+getCount(1,2)+getCount(1,3)
+     * getCount(2, 6) = getCount(1, 1) + getCount(1, 2) + getCount(1, 3) + getCount(1, 4) + getCount(1, 5)
+     * 存在大量的重复计算。
+     *
+     * @param n
+     * @param m
+     * @param local
+     * @param localLen
+     * @return
+     */
+    int dfs(int n, int m, int local, int localLen) {
+        if (localLen == n) {
+            return 0;
+        }
+        int res = 0;
+        for (int i = 1; i <= 6; i++) {
+            if (local + i == m && localLen + 1 == n) {
+                return 1;
+            }
+            if (local + i < m) {
+                res += dfs(n, m, local + i, localLen + 1);
+            } else {
+                break;
+            }
+        }
+        return res;
+    }
+
+    /**
+     * 面试题60. n个骰子的点数
+     *
+     * @param n
+     * @return
+     */
+    public double[] twoSum(int n) {
+        double[] res = new double[5 * n + 1];
+        double sum = Math.pow(6, n);
+        for (int i = 0; i < 5 * n + 1; i++) {
+            res[i] = dfs(n, i + n, 0, 0) / sum;
+        }
+        return res;
+    }
+
+    /**
+     * 面试题60. n个骰子的点数
+     * dp
+     * dp[i][j]，表示投掷完 i 枚骰子后，点数 j 的出现次数
+     * dp[i][j] = sum(dp[i-1][j-k]) (1<=k<=6 && k<=j)
+     * 前i个骰子得到j的次数=与j之差小于等于6大于等于1的前i-1个骰子的j之和 （姓党与青蛙一次可以跳n阶）
+     * <p>
+     * 关于空间优化的反向遍历 查看ppt
+     * https://leetcode-cn.com/problems/nge-tou-zi-de-dian-shu-lcof/solution/nge-tou-zi-de-dian-shu-dong-tai-gui-hua-ji-qi-yo-3/
+     *
+     * @param n
+     * @return
+     */
+    public double[] twoSum_v2(int n) {
+        int[][] dp = new int[n + 1][6 * n + 1];
+        for (int i = 1; i <= 6; i++) {
+            dp[1][i] = 1;
+        }
+        for (int i = 2; i <= n; i++) {
+            for (int j = i; j <= 6 * i; j++) {
+                for (int k = 1; k <= 6; k++) {
+                    if (j - k <= 0) {
+                        break;
+                    }
+                    dp[i][j] += dp[i - 1][j - k];
+                }
+            }
+        }
+        int sum = (int) Math.pow(6, n);
+        double[] res = new double[5 * n + 1];
+        for (int i = 0; i < 5 * n + 1; i++) {
+            res[i] = dp[n][i + n] * 1.0 / sum;
+        }
+        return res;
+    }
+
 
     @Test
     public void test1() {
         offer4 o = new offer4();
         System.out.println(o.translateNum(25));
         System.out.println(o.lengthOfLongestSubstring("acbhasgfshjdafkasdhgfsacdbkh"));
+        long begin = System.currentTimeMillis();
+        o.twoSum_v2(2);
+        long end = System.currentTimeMillis();
+        System.out.println(end - begin);
+        System.out.println(Arrays.toString(o.maxSlidingWindow_v2(new int[]{1,3,-1,-3,5,3,8}, 3)));
     }
 }
 
