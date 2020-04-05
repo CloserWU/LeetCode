@@ -6,7 +6,9 @@ import java.util.*;
 
 /**
  * <p>offer4</p>
- * <p>description</p>
+ * <p>
+ * List<int[]> 面试题57
+ * </p>
  *
  * @author closer
  * @version 1.0.0
@@ -87,6 +89,7 @@ public class offer4 {
     }
 
     /**
+     * TODO
      * 面试题49. 丑数
      * <p>
      * 较大的丑数一定能够通过 某较小丑数 × 某因子 得到。
@@ -149,6 +152,7 @@ public class offer4 {
 
 
     /**
+     * TODO
      * 面试题51. 数组中的逆序对
      *
      * @param nums
@@ -235,6 +239,7 @@ public class offer4 {
 
 
     /**
+     * TODO
      * 面试题56 - I. 数组中数字出现的次数
      * <p>
      * https://leetcode-cn.com/problems/shu-zu-zhong-shu-zi-chu-xian-de-ci-shu-lcof/solution/zhi-chu-xian-yi-ci-de-shu-xi-lie-wei-yun-suan-by-a/
@@ -267,8 +272,8 @@ public class offer4 {
 
 
     /**
+     * TODO
      * 面试题56 - II. 数组中数字出现的次数 II
-     * <p>
      * https://leetcode-cn.com/problems/shu-zu-zhong-shu-zi-chu-xian-de-ci-shu-lcof/solution/zhi-chu-xian-yi-ci-de-shu-xi-lie-wei-yun-suan-by-a/
      *
      * @param nums
@@ -295,6 +300,107 @@ public class offer4 {
     }
 
     /**
+     * 面试题57. 和为s的两个数字
+     *
+     * TLE
+     *
+     * @param nums
+     * @param target
+     * @return
+     */
+    public int[] twoSum(int[] nums, int target) {
+        for (int i = 0; i < nums.length; i++) {
+            for (int j = i + 1; j < nums.length; j++) {
+                if (nums[i] + nums[j] == target) {
+                    return new int[]{nums[i], nums[j]};
+                } else if (nums[i] + nums[j] == target) {
+                    break;
+                }
+            }
+        }
+        return new int[]{};
+    }
+
+    /**
+     * TODO
+     * 双指针 O(n)
+     * @param nums
+     * @param target
+     * @return
+     */
+    public int[] twoSum_v2(int[] nums, int target) {
+        int l = 0, r = nums.length - 1;
+        while (l < r) {
+            int res = nums[l] + nums[r];
+            if (res == target) {
+                return new int[]{nums[l], nums[r]};
+            } else if (res > target) {
+                r--;
+            } else {
+                l++;
+            }
+        }
+        return new int[]{};
+    }
+
+    /**
+     * 面试题57 - II. 和为s的连续正数序列
+     *
+     * @param target
+     * @return
+     */
+    public int[][] findContinuousSequence(int target) {
+        List<int[]> lists = new ArrayList<>();
+        for (int i = 1; i < target; i++) {
+            List<Integer> list = new ArrayList<>();
+            int res = 0;
+            for (int j = i; j < target; j++) {
+                res += j;
+                list.add(j);
+                if (res == target) {
+                    int[] tmp = new int[list.size()];
+                    for (int k = 0; k < list.size(); k++) {
+                        tmp[k] = list.get(k);
+                    }
+                    lists.add(tmp);
+                    break;
+                }
+                if (res > target) {
+                    break;
+                }
+            }
+        }
+        return lists.toArray(new int[0][]);
+    }
+
+    /**
+     * 面试题58 - I. 翻转单词顺序
+     *
+     * @param s
+     * @return
+     */
+    public String reverseWords(String s) {
+        String[] split = s.trim().split("\\s+");
+        StringBuilder sb = new StringBuilder();
+        for (int i = split.length - 1; i >= 0; i--) {
+            sb.append(' ');
+            sb.append(split[i]);
+        }
+        return sb.substring(1);
+    }
+
+    /**
+     * 面试题58 - II. 左旋转字符串
+     *
+     * @param s
+     * @param n
+     * @return
+     */
+    public String reverseLeftWords(String s, int n) {
+        return s.substring(n) + s.substring(0, n);
+    }
+
+    /**
      * 面试题59 - I. 滑动窗口的最大值
      *
      * @param nums
@@ -302,7 +408,7 @@ public class offer4 {
      * @return
      */
     public int[] maxSlidingWindow(int[] nums, int k) {
-        if (k == 0){
+        if (k == 0) {
             return new int[]{};
         }
         List<Integer> list = new ArrayList<>();
@@ -323,12 +429,13 @@ public class offer4 {
     /**
      * 线性复杂度实现
      * 记录队列的最大值，思想方法同 面试题59 - II. 队列的最大值 maxQueue.gif
+     *
      * @param nums
      * @param k
      * @return
      */
     public int[] maxSlidingWindow_v2(int[] nums, int k) {
-        if (k == 0){
+        if (k == 0) {
             return new int[]{};
         }
         List<Integer> list = new ArrayList<>();
@@ -522,7 +629,7 @@ public class offer4 {
         o.twoSum_v2(2);
         long end = System.currentTimeMillis();
         System.out.println(end - begin);
-        System.out.println(Arrays.toString(o.maxSlidingWindow_v2(new int[]{1,3,-1,-3,5,3,8}, 3)));
+        System.out.println(Arrays.toString(o.maxSlidingWindow_v2(new int[]{1, 3, -1, -3, 5, 3, 8}, 3)));
     }
 }
 

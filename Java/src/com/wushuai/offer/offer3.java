@@ -466,7 +466,7 @@ public class offer3 {
 
     /**
      * 面试题38. 字符串的排列
-     * <p>
+     * TODO
      * 交换字符 i 于其他字符的位置， 然后求 [i,-1]字串的排列， 然后恢复与 i 交换字符的位置，换到下一个字符进行交换
      *
      * @param s
@@ -478,10 +478,53 @@ public class offer3 {
         return list.toArray(new String[list.size()]);
     }
 
+    /**
+     * 面试题39. 数组中出现次数超过一半的数字   ---->   众数
+     *
+     * @param nums
+     * @return
+     */
+    public int majorityElement(int[] nums) {
+        if(nums.length == 0) {
+            return 0;
+        }
+        int num = nums[0];
+        int idx = 1;
+        for(int i = 1; i < nums.length; i++) {
+            if(nums[i] == num) {
+                idx++;
+            } else {
+                idx--;
+            }
+            if(idx == 0) {
+                num = nums[i];
+                idx = 1;
+            }
+        }
+        return num;
+        /*Arrays.sort(nums);
+        return nums[nums.length / 2];*/
+    }
+
+    /**
+     * 面试题40. 最小的k个数
+     * TODO System.arraycopy(arr, srcPos, res, destPos, len)
+     *
+     * @param arr
+     * @param k
+     * @return
+     */
+    public int[] getLeastNumbers(int[] arr, int k) {
+        Arrays.sort(arr);
+        int[] res = new int[k];
+        System.arraycopy(arr, 0, res, 0, k);
+        return res;
+    }
+
 
     /**
      * 面试题41. 数据流中的中位数
-     * <p>
+     * TODO
      * Your MedianFinder object will be instantiated and called as such:
      * MedianFinder obj = new MedianFinder();
      * obj.addNum(num);
