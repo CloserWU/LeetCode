@@ -238,6 +238,256 @@ public class offer4 {
     }
 
 
+    public class ListNode {
+        int val;
+        ListNode next;
+
+        ListNode(int x) {
+            val = x;
+            next = null;
+        }
+    }
+
+    /**
+     * 面试题52. 两个链表的第一个公共节点
+     *
+     * @param headA
+     * @param headB
+     * @return
+     */
+    public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
+        int lenA = 0;
+        ListNode bakA = headA;
+        while (headA != null) {
+            lenA++;
+            headA = headA.next;
+        }
+        int lenB = 0;
+        ListNode bakB = headB;
+        while (headB != null) {
+            lenB++;
+            headB = headB.next;
+        }
+        headA = bakA;
+        headB = bakB;
+        if (lenA > lenB) {
+            while (lenA > lenB) {
+                headA = headA.next;
+                lenA--;
+            }
+        } else if (lenA < lenB) {
+            while (lenB > lenA) {
+                headB = headB.next;
+                lenB--;
+            }
+        }
+        while (headA != null) {
+            if (headA == headB) {
+                return headA;
+            }
+            headA = headA.next;
+            headB = headB.next;
+        }
+        return null;
+        /*
+        https://leetcode-cn.com/problems/liang-ge-lian-biao-de-di-yi-ge-gong-gong-jie-dian-lcof/solution/shuang-zhi-zhen-fa-lang-man-xiang-yu-by-ml-zimingm/
+        ListNode h1 = headA, h2 = headB;
+        while (h1 != h2) {
+            h1 = h1 == null ? headB : h1.next;
+            h2 = h2 == null ? headA : h2.next;
+        }
+        return h1;
+         */
+    }
+
+    /**
+     * TODO
+     *
+     * @param arr
+     * @param target
+     * @return
+     */
+    int binarySearch(int[] arr, int target) {
+        int low = 0, high = arr.length - 1;
+        while (low <= high) {
+            int mid = (low + high) >>> 1;
+            if (arr[mid] > target) {
+                high = mid - 1;
+            } else if (arr[mid] < target) {
+                low = mid + 1;
+            } else {
+                return mid;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * 面试题53 - I. 在排序数组中查找数字 I
+     *
+     * @param nums
+     * @param target
+     * @return
+     */
+    public int search(int[] nums, int target) {
+        if (nums.length == 0) {
+            return 0;
+        }
+        int idx = binarySearch(nums, target);
+        if (idx == -1) {
+            return 0;
+        }
+        int low = idx, high = idx;
+        for (int i = idx + 1; i < nums.length; i++) {
+            if (nums[i] == nums[idx]) {
+                high++;
+            } else {
+                break;
+            }
+        }
+        for (int i = idx - 1; i >= 0; i--) {
+            if (nums[i] == nums[idx]) {
+                low--;
+            } else {
+                break;
+            }
+        }
+        return high - low + 1;
+    }
+
+    /**
+     * 面试题53 - II. 0～n-1中缺失的数字
+     * <p>
+     * 有序数组就想到二分
+     *
+     * @param nums
+     * @return
+     */
+    public int missingNumber(int[] nums) {
+        int i = 0, j = nums.length - 1;
+        while (i <= j) {
+            int m = (i + j) >>> 1;
+            if (nums[m] == m) {
+                i = m + 1;
+            } else {
+                j = m - 1;
+            }
+        }
+        return i;
+
+        /*int total = nums.length * (nums.length + 1) / 2;
+        int t = 0;
+        for (int num : nums) {
+            t += num;
+        }
+        return total - t;*/
+    }
+
+    public class TreeNode {
+        int val;
+        TreeNode left;
+        TreeNode right;
+
+        TreeNode(int x) {
+            val = x;
+        }
+    }
+
+    int k = 0;
+
+    int inOrder(TreeNode root) {
+        if (root != null && k >= 0) {
+            int left = inOrder(root.right);
+            if (left != Integer.MIN_VALUE) {
+                return left;
+            }
+            if (k == 1) {
+                return root.val;
+            }
+            k--;
+            int right = inOrder(root.left);
+            if (right != Integer.MIN_VALUE) {
+                return right;
+            }
+        }
+        return Integer.MIN_VALUE;
+    }
+
+    /**
+     * 面试题54. 二叉搜索树的第k大节点
+     * <p>
+     * 第k大 右根左
+     * 第k小 左根右
+     *
+     * @param root
+     * @param k
+     * @return
+     */
+    public int kthLargest(TreeNode root, int k) {
+        this.k = k;
+        return inOrder(root);
+    }
+
+    /**
+     * 面试题55 - I. 二叉树的深度
+     *
+     * @param root
+     * @return
+     */
+    public int maxDepth(TreeNode root) {
+        if (root != null) {
+            int left = maxDepth(root.left) + 1;
+            int right = maxDepth(root.right) + 1;
+            return Integer.max(left, right);
+        }
+        return 0;
+        /* c++  TODO 层序
+        if(root == NULL) return 0;
+        std::queue<TreeNode*> que;
+        int level = 0, last = 0;
+        int _front = -1, rear = -1;
+        que.push(root);rear++;
+        while(_front < rear){
+            TreeNode* t = que.front();_front++;que.pop();
+            if(t && t->left != NULL) {que.push(t->left);rear++;}
+            if(t && t->right != NULL) {que.push(t->right);rear++;}
+            if(last == _front){
+                level++;
+                last = rear;
+            }
+
+        }
+        return level;
+         */
+    }
+
+    boolean flag = true;
+
+    int Judge(TreeNode root) {
+        if (root != null) {
+            int left = Judge(root.left) + 1;
+            int right = Judge(root.right) + 1;
+            if (Math.abs(left - right) >= 2) {
+                flag = false;
+            }
+            return Math.max(left, right);
+        }
+        return 0;
+    }
+
+    /**
+     * 面试题55 - II. 平衡二叉树
+     *
+     * @param root
+     * @return
+     */
+    public boolean isBalanced(TreeNode root) {
+        if (root != null) {
+            Judge(root);
+        }
+        return flag;
+    }
+
     /**
      * TODO
      * 面试题56 - I. 数组中数字出现的次数
@@ -301,7 +551,7 @@ public class offer4 {
 
     /**
      * 面试题57. 和为s的两个数字
-     *
+     * <p>
      * TLE
      *
      * @param nums
@@ -324,6 +574,7 @@ public class offer4 {
     /**
      * TODO
      * 双指针 O(n)
+     *
      * @param nums
      * @param target
      * @return
