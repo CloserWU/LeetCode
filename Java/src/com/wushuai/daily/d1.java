@@ -14,6 +14,38 @@ import java.util.*;
  */
 public class d1 {
 
+    /**
+     * 4.04
+     * 42. 接雨水
+     *
+     * 对每个位置，找到左边最高的柱子，再找到右边最高的柱子，然后选取两者最小值， 与当前位置柱子高度相减，
+     * 得到这个位置能存多少雨水
+     *
+     *
+     * @param height
+     * @return
+     */
+    public int trap(int[] height) {
+        int[] left = new int[height.length];
+        int maxLeft = 0;
+        int[] right = new int[height.length];
+        int maxRight = 0;
+        int res = 0;
+        for (int i = 0; i < height.length; i++) {
+            left[i] = Integer.max(maxLeft, height[i]);
+            maxLeft = left[i];
+        }
+        for (int i = height.length - 1; i >= 0; i--) {
+            right[i] = Integer.max(maxRight, height[i]);
+            maxRight = right[i];
+        }
+        for (int i = 1; i < height.length - 1; i++) {
+            res += Math.max(Math.min(left[i - 1], right[i + 1]) - height[i], 0);
+        }
+        return res;
+    }
+
+
     class Cache {
         int key;
         int value;
@@ -194,16 +226,62 @@ public class d1 {
         }
     }
 
+    /**
+     * 4.08
+     * 面试题13. 机器人的运动范围
+     *
+     * @param m
+     * @param n
+     * @param k
+     * @return
+     */
+    public int movingCount(int m, int n, int k) {
+        if (k == 0) {
+            return 1;
+        }
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < 9; i++) {
+            map.put(i, 9);
+        }
+        map.put(9, 18);
+        map.put(10, 28);
+        map.put(11, 38);
+        map.put(12, 48);
+        map.put(13, 58);
+        map.put(14, 68);
+        map.put(15, 78);
+        map.put(16, 88);
+        map.put(17, 98);
+        map.put(18, 107);
+        map.put(19, 117);
+        map.put(20, 127);
+        int res = 0;
+        m = Math.min(m, map.get(k) + 1);
+        n = Math.min(n, map.get(k) + 1);
+        int[][] board = new int[m][n];
+        int tmp = map.get(k) / 10 + 1;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < Math.min((tmp - i / 10) * 10, n); j++) {
+                board[i][j] = i / 100 + (i % 100) / 10 + (i % 100) % 10;
+                board[i][j] += j / 100 + (j % 100) / 10 + (j % 100) % 10;
+                if (board[i][j] <= k) {
+                    res++;
+                }
+            }
+        }
+        return res;
+    }
+
 
     @Test
     public void test1() {
         d1 o = new d1();
 //        o.rotate(new int[][]{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}});
 //        System.out.println(o.minDistance("acoood", "aoooad"));
-        LFUCache cache = new LFUCache( 0 /* capacity (缓存容量) */ );
-
-        cache.put(0,0);
-        cache.get(0);
+//        LFUCache cache = new LFUCache(0 /* capacity (缓存容量) */);
+//
+//        cache.put(0, 0);
+//        cache.get(0);
         /*cache.put(1, 1);
         cache.put(2, 2);
         System.out.println(cache.get(1));       // 返回 1
@@ -215,6 +293,8 @@ public class d1 {
         System.out.println(cache.get(3));       // 返回 3
         System.out.println(cache.get(4));       // 返回 4
 */
+
+        System.out.println(o.trap(new int[]{0,1,0,2,1,0,1,3,2,1,2,1}));
     }
 }
 
