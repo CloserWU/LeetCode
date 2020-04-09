@@ -2,6 +2,7 @@ package com.wushuai.daily;
 
 import org.junit.Test;
 
+import java.math.BigInteger;
 import java.util.*;
 
 /**
@@ -15,12 +16,209 @@ import java.util.*;
 public class d1 {
 
     /**
+     * 4.01
+     * 1111. 有效括号的嵌套深度
+     *
+     * @param seq
+     * @return
+     */
+    public int[] maxDepthAfterSplit(String seq) {
+        int stack = 0;
+        int[] res = new int[seq.length()];
+        // 求出每个括号的深度
+        // ((())()())
+        // 1233222221
+        for (int i = 0; i < seq.length(); i++) {
+            if (seq.charAt(i) == '(') {
+                res[i] = ++stack;
+            } else {
+                res[i] = stack--;
+            }
+        }
+        // 深度位偶数的括号分配给A，奇数的分配给B
+        // ((())()())
+        // BABBAAAAAB
+        for (int i = 0; i < res.length; i++) {
+            if (res[i] % 2 == 0) {
+                res[i] = 1;
+            } else {
+                res[i] = 0;
+            }
+        }
+        return res;
+    }
+
+    /**
+     * 4.02
+     * 289. 生命游戏
+     * https://leetcode-cn.com/problems/game-of-life/solution/c-wei-yun-suan-yuan-di-cao-zuo-ji-bai-shuang-bai-b/
+     *
+     * @param board
+     */
+    public void gameOfLife(int[][] board) {
+        // 左上逆时针 x、y的梯度
+        int[] dy = new int[]{-1, 0, 1, 1, 1, 0, -1, -1};
+        int[] dx = new int[]{-1, -1, -1, 0, 1, 1, 1, 0};
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[0].length; j++) {
+                int sum = 0;
+                for (int k = 0; k < 8; k++) {
+                    int nx = i + dx[k];
+                    int ny = j + dy[k];
+                    if (nx >= 0 && nx < board.length && ny >= 0 && ny < board[0].length) {
+                        // 与 只加最低位
+                        sum += (board[nx][ny] & 1);
+                    }
+                }
+                if (board[i][j] == 1) {
+                    if (sum == 3 || sum == 2) {
+                        // 依然存活 ，高位置1
+                        board[i][j] |= 2;
+                    }
+                    // 死亡 高位置0 不变
+                } else {
+                    if (sum == 3) {
+                        // 复活 高位置1
+                        board[i][j] |= 2;
+                    }
+                }
+            }
+        }
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[0].length; j++) {
+                board[i][j] >>>= 1;
+            }
+        }
+    }
+
+
+    /**
+     * 4.03
+     * 8. 字符串转换整数 (atoi)
+     *
+     * @param str
+     * @return
+     */
+    public int myAtoi(String str) {
+        str = str.trim();
+        if (str.length() == 0) {
+            return 0;
+        }
+        if (str.charAt(0) == '+' || str.charAt(0) == '-') {
+            if (str.length() == 1) {
+                return 0;
+            }
+            if (str.charAt(1) > '9' || str.charAt(1) < '0') {
+                return 0;
+            }
+        } else if (str.charAt(0) > '9' || str.charAt(0) < '0') {
+            return 0;
+        }
+
+
+        String s = str.split("\\s+")[0];
+        while (s.charAt(s.length() - 1) > '9' || str.charAt(s.length() - 1) < '0') {
+            s = s.substring(0, s.length() - 1);
+        }
+        if (s.length() == 0) {
+            return 0;
+        }
+        if (s.contains(".")) {
+            s = s.split("\\.")[0];
+        }
+        for (int i = 0; i < s.length(); i++) {
+            if (i == 0 && (s.charAt(0) == '+' || s.charAt(0) == '-')) {
+                continue;
+            }
+            if (s.charAt(i) > '9' || s.charAt(i) < '0') {
+                s = s.substring(0, i);
+                break;
+            }
+        }
+        BigInteger bg = new BigInteger(s);
+        if (bg.compareTo(BigInteger.valueOf(-2147483648L)) < 0) {
+            return -2147483648;
+        } else if (bg.compareTo(BigInteger.valueOf(2147483647L)) > 0) {
+            return 2147483647;
+        } else {
+            return bg.intValue();
+        }
+    }
+
+    /**
+     * DFA 有限自动机
+     * ''        +/-     number      other
+     * ---------------------------------
+     * start     | start    signed   in_number   end
+     * signed    | end      end      in_numner   end
+     * in_number | end      end      in_numner   end
+     * end       | end      end      end         end
+     */
+    class Automation {
+        int[][] dfa;
+
+        Automation() {
+            dfa = new int[][]{
+                    {0, 1, 2, 3},
+                    {3, 3, 2, 3},
+                    {3, 3, 2, 3},
+                    {3, 3, 3, 3}
+            };
+        }
+
+        int getCol(char c) {
+            if (c == ' ') {
+                return 0;
+            } else if (c <= '9' && c >= '0') {
+                return 2;
+            } else if (c == '+' || c == '-') {
+                return 1;
+            } else {
+                return 3;
+            }
+        }
+
+        boolean match(String text) {
+            int state = 0;
+            int i;
+            for (i = 0; i < text.length(); i++) {
+                state = dfa[state][getCol(text.charAt(i))];
+                if (state == 3 && i != text.length() - 1) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        int getTextValue(String text) {
+            long ans = 0;
+            int sign = 1;
+            int state = 0;
+            for (int i = 0; i < text.length(); i++) {
+                state = dfa[state][getCol(text.charAt(i))];
+                if (state == 2) {
+                    ans = ans * 10 + text.charAt(i) - '0';
+                    ans = sign == 1 ? Math.min(ans, Integer.MAX_VALUE) : Math.min(ans, -(long) Integer.MIN_VALUE);
+                } else if (state == 1) {
+                    sign = text.charAt(i) == '+' ? 1 : -1;
+                }
+            }
+            return (int) ans * sign;
+        }
+
+    }
+
+    public int myAtoi_v2(String str) {
+        Automation automation = new Automation();
+        return automation.getTextValue(str);
+    }
+
+    /**
      * 4.04
      * 42. 接雨水
-     *
+     * <p>
      * 对每个位置，找到左边最高的柱子，再找到右边最高的柱子，然后选取两者最小值， 与当前位置柱子高度相减，
      * 得到这个位置能存多少雨水
-     *
      *
      * @param height
      * @return
@@ -172,111 +370,11 @@ public class d1 {
         }
     }
 
-    /**
-     * 4.06
-     * 72. 编辑距离
-     * dp[i][j] 代表 word1 到 i 位置转换成 word2 到 j 位置需要最少步数
-     * 当 word1[i] == word2[j]，dp[i][j] = dp[i-1][j-1]；
-     * 当 word1[i] != word2[j]，dp[i][j] = min(dp[i-1][j-1], dp[i-1][j], dp[i][j-1]) + 1
-     * 其中，dp[i-1][j-1] 表示替换操作，dp[i-1][j] 表示删除操作，dp[i][j-1] 表示插入操作。
-     * 注意，针对第一行，第一列要单独考虑，我们引入 ''
-     * https://leetcode-cn.com/problems/edit-distance/solution/zi-di-xiang-shang-he-zi-ding-xiang-xia-by-powcai-3/
-     */
-    public int minDistance(String word1, String word2) {
-        int[][] dp = new int[word1.length() + 1][word1.length() + 1];
-        for (int i = 0; i < dp.length; i++) {
-            dp[i][0] = i;
-        }
-        for (int i = 0; i < dp[0].length; i++) {
-            dp[0][i] = i;
-        }
-        for (int i = 1; i < dp.length; i++) {
-            for (int j = 1; j < dp[0].length; j++) {
-                if (word1.charAt(i - 1) == word2.charAt(j - 1)) {
-                    dp[i][j] = dp[i - 1][j - 1];
-                } else {
-                    dp[i][j] = Integer.min(Integer.min(dp[i - 1][j], dp[i][j - 1]), dp[i - 1][j - 1]) + 1;
-                }
-            }
-        }
-        return dp[dp.length - 1][dp[0].length - 1];
-    }
-
-
-    /**
-     * 4.07
-     * 面试题 01.07. 旋转矩阵
-     *
-     * @param matrix
-     */
-    public void rotate(int[][] matrix) {
-        // 反对角转置矩阵
-        for (int i = 0; i < matrix.length - 1; i++) {
-            for (int j = 0; j < matrix.length - i - 1; j++) {
-                int tmp = matrix[i][j];
-                matrix[i][j] = matrix[matrix.length - j - 1][matrix.length - i - 1];
-                matrix[matrix.length - j - 1][matrix.length - i - 1] = tmp;
-            }
-        }
-        // 行变换
-        for (int i = 0; i < matrix[0].length / 2; i++) {
-            int[] tmp = matrix[i];
-            matrix[i] = matrix[matrix[0].length - i - 1];
-            matrix[matrix[0].length - i - 1] = tmp;
-        }
-    }
-
-    /**
-     * 4.08
-     * 面试题13. 机器人的运动范围
-     *
-     * @param m
-     * @param n
-     * @param k
-     * @return
-     */
-    public int movingCount(int m, int n, int k) {
-        if (k == 0) {
-            return 1;
-        }
-        Map<Integer, Integer> map = new HashMap<>();
-        for (int i = 0; i < 9; i++) {
-            map.put(i, 9);
-        }
-        map.put(9, 18);
-        map.put(10, 28);
-        map.put(11, 38);
-        map.put(12, 48);
-        map.put(13, 58);
-        map.put(14, 68);
-        map.put(15, 78);
-        map.put(16, 88);
-        map.put(17, 98);
-        map.put(18, 107);
-        map.put(19, 117);
-        map.put(20, 127);
-        int res = 0;
-        m = Math.min(m, map.get(k) + 1);
-        n = Math.min(n, map.get(k) + 1);
-        int[][] board = new int[m][n];
-        int tmp = map.get(k) / 10 + 1;
-        for (int i = 0; i < m; i++) {
-            for (int j = 0; j < Math.min((tmp - i / 10) * 10, n); j++) {
-                board[i][j] = i / 100 + (i % 100) / 10 + (i % 100) % 10;
-                board[i][j] += j / 100 + (j % 100) / 10 + (j % 100) % 10;
-                if (board[i][j] <= k) {
-                    res++;
-                }
-            }
-        }
-        return res;
-    }
-
 
     @Test
     public void test1() {
         d1 o = new d1();
-//        o.rotate(new int[][]{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}});
+
 //        System.out.println(o.minDistance("acoood", "aoooad"));
 //        LFUCache cache = new LFUCache(0 /* capacity (缓存容量) */);
 //
@@ -294,7 +392,23 @@ public class d1 {
         System.out.println(cache.get(4));       // 返回 4
 */
 
-        System.out.println(o.trap(new int[]{0,1,0,2,1,0,1,3,2,1,2,1}));
+        System.out.println(o.trap(new int[]{0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1}));
+        System.out.println(o.myAtoi("   -42"));
+        System.out.println(o.myAtoi("4193 with words"));
+        System.out.println(o.myAtoi("words and 987"));
+        System.out.println(o.myAtoi("-91283472332"));
+        System.out.println(o.myAtoi("91283472332"));
+        System.out.println(o.myAtoi("-2147483648"));
+        System.out.println(o.myAtoi(" 874 in s"));
+        System.out.println(o.myAtoi(" 3.1512744"));
+        System.out.println(o.myAtoi("-63...45845"));
+
+        o.gameOfLife(new int[][]{{0, 1, 0}, {0, 0, 1}, {1, 1, 1}, {0, 0, 0}});
+
+//        System.out.println(Arrays.toString(o.maxDepthAfterSplit("(()())")));
+//        System.out.println(Arrays.toString(o.maxDepthAfterSplit("()(())()")));
+        System.out.println(Arrays.toString(o.maxDepthAfterSplit("((())()())")));
+
     }
 }
 
