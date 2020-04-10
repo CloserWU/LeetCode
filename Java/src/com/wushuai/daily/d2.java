@@ -151,6 +151,23 @@ public class d2 {
         return list;
     }
 
+    /**
+     * 4.10
+     * 151. 翻转字符串里的单词
+     *
+     * @param s
+     * @return
+     */
+    public String reverseWords(String s) {
+        String[] split = s.trim().split("\\s+");
+        StringBuilder sb = new StringBuilder();
+        for (int i = split.length - 1; i >= 0; i--) {
+            sb.append(' ');
+            sb.append(split[i]);
+        }
+        return sb.substring(1);
+    }
+
     @Test
     public void test1() {
         d2 o = new d2();
