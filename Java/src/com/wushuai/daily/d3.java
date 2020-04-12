@@ -2,7 +2,10 @@ package com.wushuai.daily;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * <p>d3</p>
@@ -96,10 +99,168 @@ public class d3 {
         return dp[N][K];
     }
 
+    /**
+     * Ax + By + C = 0
+     */
+    class Line {
+        double A;
+        double B;
+        double C;
+
+        public Line(double a, double b, double c) {
+            A = a;
+            B = b;
+            C = c;
+        }
+    }
+
+    class Point {
+        double x;
+        double y;
+
+        public Point(double x, double y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
+
+    /**
+     * 判断两条线是否平行
+     * A1/B1 == A2/B2。
+     * 或 A1*B2 == A2*B1
+     * @param line1
+     * @param line2
+     * @return
+     */
+    Boolean judgeParallel(Line line1, Line line2) {
+        return line1.A * line2.B == line2.A * line1.B;
+    }
+
+    /**
+     * 获得两点间距
+     * @param point1
+     * @param point2
+     * @return
+     */
+    double getDistance(Point point1, Point point2) {
+        return Math.sqrt(Math.pow(point1.x - point2.x, 2) + Math.pow(point1.y - point2.y, 2));
+    }
+
+    /**
+     * 判断point1 是否在线段start - end 上
+     * distance(p,s) + distance(p,e) == distance(s, e)，
+     * 精确到小数点后3位即可
+     * @param point1
+     * @param start
+     * @param end
+     * @return
+     */
+    Boolean judgeInline(Point point1, Point start, Point end) {
+        return Math.abs(getDistance(point1, start) + getDistance(point1, end) - getDistance(start, end)) < 1e-3;
+    }
+
+    /**
+     * 获得两平行线端的交点
+     * 分别查看两线段的顶点 是否在另一线段上， 若在就加入结果集
+     * 最后选取结果集中x最小的点
+     * @param start1
+     * @param start2
+     * @param end1
+     * @param end2
+     * @return
+     */
+    Point getIntersectionOfParallelLine(Point start1, Point start2, Point end1, Point end2) {
+        List<Point> res = new ArrayList<>();
+        if (judgeInline(start1, start2, end2)) {
+            res.add(start1);
+        }
+        if (judgeInline(end1, start2, end2)) {
+            res.add(end1);
+        }
+        if (judgeInline(start2, start1, end1)) {
+            res.add(start2);
+        }
+        if (judgeInline(end2, start1, end1)) {
+            res.add(end2);
+        }
+        if (res.size() == 0) {
+            return null;
+        }
+        res.sort(new Comparator<Point>() {
+            @Override
+            public int compare(Point o1, Point o2) {
+                return Double.compare(o1.x, o2.x);
+            }
+        });
+        return res.get(0);
+    }
+
+    /**
+     * 获取两不平直线(段)的交点
+     * 得到交点坐标
+     * x = (c2 * b1 - c1 * b2) / (a1 * b2 - a2 * b1)
+     * y = (c1 * a2 - c2 * a1) / (a1 * b2 - a2 * b1)
+     * 如果(x,y)在两线段上，则(x,y)即为答案，否则交点不存在。
+     * @param line1
+     * @param line2
+     * @param start1
+     * @param start2
+     * @param end1
+     * @param end2
+     * @return
+     */
+    Point getIntersection(Line line1, Line line2, Point start1, Point start2, Point end1, Point end2) {
+        double x = (line2.C * line1.B - line1.C * line2.B) / (line1.A * line2.B - line2.A * line1.B);
+        double y = (line1.C * line2.A - line2.C * line1.A) / (line1.A * line2.B - line2.A * line1.B);
+        Point point = new Point(x, y);
+        if (judgeInline(point, start1, end1) && judgeInline(point, start2, end2)) {
+            return point;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * 4.12
+     * 面试题 16.03. 交点
+     *
+     * https://leetcode-cn.com/problems/intersection-lcci/solution/c-yi-ban-shi-qiu-jiao-dian-by-time-limit/
+     *
+     * @param start1
+     * @param end1
+     * @param start2
+     * @param end2
+     * @return
+     */
+    public double[] intersection(int[] start1, int[] end1, int[] start2, int[] end2) {
+        Point s1 = new Point(start1[0], start1[1]);
+        Point e1 = new Point(end1[0], end1[1]);
+        Point s2 = new Point(start2[0], start2[1]);
+        Point e2 = new Point(end2[0], end2[1]);
+        Line line1 = new Line(e1.y - s1.y, s1.x - e1.x, e1.x * s1.y - s1.x * e1.y);
+        Line line2 = new Line(e2.y - s2.y, s2.x - e2.x, e2.x * s2.y - s2.x * e2.y);
+        Point res = null;
+        if (judgeParallel(line1, line2)) {
+            res = getIntersectionOfParallelLine(s1, s2, e1, e2);
+        } else {
+            res = getIntersection(line1, line2, s1, s2, e1, e2);
+        }
+        if (res != null) {
+            return new double[]{res.x, res.y};
+        } else {
+            return new double[]{};
+        }
+    }
+
     @Test
     public void test1() {
         d3 o = new d3();
-        System.out.println(o.superEggDrop_v2(2, 100));
+//        System.out.println(o.superEggDrop_v2(2, 100));
+        int[] s1 = new int[]{0, 0};
+        int[] e1 = new int[]{3, 3};
+        int[] s2 = new int[]{1, 1};
+        int[] e2 = new int[]{2, 2};
+        System.out.println(Arrays.toString(o.intersection(s1, e1, s2, e2)));
     }
 }
 
