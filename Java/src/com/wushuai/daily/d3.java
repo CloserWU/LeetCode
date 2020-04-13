@@ -2,7 +2,7 @@ package com.wushuai.daily;
 
 import org.junit.Test;
 
-import java.util.ArrayList;
+import java.util.*;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -128,6 +128,7 @@ public class d3 {
      * 判断两条线是否平行
      * A1/B1 == A2/B2。
      * 或 A1*B2 == A2*B1
+     *
      * @param line1
      * @param line2
      * @return
@@ -138,6 +139,7 @@ public class d3 {
 
     /**
      * 获得两点间距
+     *
      * @param point1
      * @param point2
      * @return
@@ -150,6 +152,7 @@ public class d3 {
      * 判断point1 是否在线段start - end 上
      * distance(p,s) + distance(p,e) == distance(s, e)，
      * 精确到小数点后3位即可
+     *
      * @param point1
      * @param start
      * @param end
@@ -163,6 +166,7 @@ public class d3 {
      * 获得两平行线端的交点
      * 分别查看两线段的顶点 是否在另一线段上， 若在就加入结果集
      * 最后选取结果集中x最小的点
+     *
      * @param start1
      * @param start2
      * @param end1
@@ -201,6 +205,7 @@ public class d3 {
      * x = (c2 * b1 - c1 * b2) / (a1 * b2 - a2 * b1)
      * y = (c1 * a2 - c2 * a1) / (a1 * b2 - a2 * b1)
      * 如果(x,y)在两线段上，则(x,y)即为答案，否则交点不存在。
+     *
      * @param line1
      * @param line2
      * @param start1
@@ -223,7 +228,7 @@ public class d3 {
     /**
      * 4.12
      * 面试题 16.03. 交点
-     *
+     * <p>
      * https://leetcode-cn.com/problems/intersection-lcci/solution/c-yi-ban-shi-qiu-jiao-dian-by-time-limit/
      *
      * @param start1
@@ -252,6 +257,99 @@ public class d3 {
         }
     }
 
+    /**
+     * 4.12
+     * 355. 设计推特
+     * Your Twitter object will be instantiated and called as such:
+     * Twitter obj = new Twitter();
+     * obj.postTweet(userId,tweetId);
+     * List<Integer> param_2 = obj.getNewsFeed(userId);
+     * obj.follow(followerId,followeeId);
+     * obj.unfollow(followerId,followeeId);
+     */
+    class Twitter {
+
+        class Node {
+            int userId;
+            int tweetId;
+
+            public Node(int userId, int tweetId) {
+                this.userId = userId;
+                this.tweetId = tweetId;
+            }
+        }
+
+        List<Node> lists;
+        Map<Integer, List<Integer>> userTable;
+
+        /**
+         * Initialize your data structure here.
+         */
+        public Twitter() {
+            lists = new ArrayList<>();
+            userTable = new HashMap<>();
+        }
+
+        /**
+         * Compose a new tweet.
+         */
+        public void postTweet(int userId, int tweetId) {
+            if (!userTable.containsKey(userId)) {
+                List<Integer> list = new ArrayList<>();
+                list.add(userId);
+                userTable.put(userId, list);
+            }
+            lists.add(new Node(userId, tweetId));
+        }
+
+        /**
+         * Retrieve the 10 most recent tweet ids in the user's news feed. Each item in the news feed must be posted by users who the user followed or by the user herself. Tweets must be ordered from most recent to least recent.
+         */
+        public List<Integer> getNewsFeed(int userId) {
+            List<Integer> res = new ArrayList<>();
+            List<Integer> followed = userTable.get(userId);
+            if (followed == null) {
+                return res;
+            }
+            int i = lists.size() - 1;
+            while (res.size() < 10 && i >= 0) {
+                Node node = lists.get(i);
+                if (followed.contains((Object) node.userId)) {
+                    res.add(node.tweetId);
+                }
+                i--;
+            }
+            return res;
+        }
+
+        /**
+         * Follower follows a followee. If the operation is invalid, it should be a no-op.
+         */
+        public void follow(int followerId, int followeeId) {
+            List<Integer> list = userTable.get(followerId);
+            if (list == null) {
+                list = new ArrayList<>();
+                list.add(followerId);
+            }
+            list.add(followeeId);
+            userTable.put(followerId, list);
+        }
+
+        /**
+         * Follower unfollows a followee. If the operation is invalid, it should be a no-op.
+         */
+        public void unfollow(int followerId, int followeeId) {
+            if (followeeId == followerId) {
+                return;
+            }
+            List<Integer> list = userTable.get(followerId);
+            if (list != null) {
+                list.remove((Object) followeeId);
+            }
+        }
+    }
+
+
     @Test
     public void test1() {
         d3 o = new d3();
@@ -261,6 +359,32 @@ public class d3 {
         int[] s2 = new int[]{1, 1};
         int[] e2 = new int[]{2, 2};
         System.out.println(Arrays.toString(o.intersection(s1, e1, s2, e2)));
+
+        Twitter twitter = new Twitter();
+
+// 用户1发送了一条新推文 (用户id = 1, 推文id = 5).
+        twitter.postTweet(1, 5);
+
+// 用户1的获取推文应当返回一个列表，其中包含一个id为5的推文.
+        System.out.println(twitter.getNewsFeed(1));
+
+// 用户1关注了用户2.
+        twitter.follow(1, 2);
+
+// 用户2发送了一个新推文 (推文id = 6).
+        twitter.postTweet(2, 6);
+
+// 用户1的获取推文应当返回一个列表，其中包含两个推文，id分别为 -> [6, 5].
+// 推文id6应当在推文id5之前，因为它是在5之后发送的.
+        System.out.println(twitter.getNewsFeed(1));
+
+// 用户1取消关注了用户2.
+        twitter.unfollow(1, 2);
+
+// 用户1的获取推文应当返回一个列表，其中包含一个id为5的推文.
+// 因为用户1已经不再关注用户2.
+        System.out.println(twitter.getNewsFeed(1));
+
     }
 }
 
