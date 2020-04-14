@@ -349,6 +349,76 @@ public class d3 {
         }
     }
 
+    public class ListNode {
+        int val;
+        ListNode next;
+
+        ListNode(int x) {
+            val = x;
+        }
+    }
+
+    /**
+     * 4.14
+     * 445. 两数相加 II
+     *
+     * @param l1
+     * @param l2
+     * @return
+     */
+    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+        List<Integer> list1 = new ArrayList<>();
+        List<Integer> list2 = new ArrayList<>();
+        while (l1 != null) {
+            list1.add(l1.val);
+            l1 = l1.next;
+        }
+        while (l2 != null) {
+            list2.add(l2.val);
+            l2 = l2.next;
+        }
+        Collections.reverse(list1);
+        Collections.reverse(list2);
+        List<Integer> t = null;
+        if (list1.size() < list2.size()) {
+            t = list1;
+            list1 = list2;
+            list2 = t;
+        }
+        int carry = 0;
+        int i, j;
+        for (i = 0, j = 0; i < list1.size() && j < list2.size(); i++, j++) {
+            int tmp = list1.get(i) + list2.get(j) + carry;
+            if (tmp >= 10) {
+                tmp -= 10;
+                carry = 1;
+            } else {
+                carry = 0;
+            }
+            list1.set(i, tmp);
+        }
+        while (carry == 1 && i < list1.size()) {
+            int tmp = list1.get(i) + carry;
+            if (tmp >= 10) {
+                tmp -= 10;
+                carry = 1;
+            } else {
+                carry = 0;
+            }
+            list1.set(i++, tmp);
+        }
+        if (carry == 1) {
+            list1.add(1);
+        }
+        ListNode root = new ListNode(-1);
+        for (i = 0; i < list1.size(); i++) {
+            ListNode node = new ListNode(list1.get(i));
+            node.next = root.next;
+            root.next = node;
+        }
+        return root.next;
+    }
+
 
     @Test
     public void test1() {
