@@ -420,6 +420,183 @@ public class d3 {
     }
 
 
+    int bfs(int[][] matrix, int row, int col, Boolean[][] visit) {
+        if (row < 0 || row >= matrix.length || col < 0 || col >= matrix[0].length || visit[row][col]) {
+            return 999999;
+        }
+        if (matrix[row][col] == 0) {
+            return 0;
+        }
+        int min = Integer.MAX_VALUE;
+        visit[row][col] = true;
+        min = Integer.min(min, bfs(matrix, row + 1, col, visit) + 1);
+        min = Integer.min(min, bfs(matrix, row - 1, col, visit) + 1);
+        min = Integer.min(min, bfs(matrix, row, col + 1, visit) + 1);
+        min = Integer.min(min, bfs(matrix, row, col - 1, visit) + 1);
+        visit[row][col] = false;
+        return min;
+    }
+
+    /**
+     * 4.15
+     * 542. 01 矩阵
+     * <p>
+     * bfs O(n^4)
+     * TLE 算法正确
+     * dfs + 回溯
+     * 需要注意一些地方，
+     * - 每次递归结束后，要还原状态
+     * - 二维数组初始化指挥初始化列，不会初始化行，行元素都为null
+     *
+     * @param matrix
+     * @return
+     */
+    public int[][] updateMatrix(int[][] matrix) {
+        int[][] res = new int[matrix.length][matrix[0].length];
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[0].length; j++) {
+                Boolean[][] visit = new Boolean[matrix.length][matrix[0].length];
+                for (int k = 0; k < visit.length; k++) {
+                    Arrays.fill(visit[k], false);
+                }
+                res[i][j] = bfs(matrix, i, j, visit);
+            }
+        }
+        return res;
+    }
+
+    /**
+     * DP O(4 * n^2)
+     * 一次往四个方向遍历，一次求最小值
+     *
+     * @param matrix
+     * @return
+     */
+    public int[][] updateMatrix_v2(int[][] matrix) {
+        int[][] res = new int[matrix.length][matrix[0].length];
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[0].length; j++) {
+                if (matrix[i][j] == 1) {
+                    res[i][j] = 999999;
+                } else {
+                    res[i][j] = 0;
+                }
+            }
+        }
+        // 左上到右下 （每个元素都向左看 向上看）
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[0].length; j++) {
+                if (i - 1 >= 0) {
+                    res[i][j] = Integer.min(res[i][j], 1 + res[i - 1][j]);
+                }
+                if (j - 1 >= 0) {
+                    res[i][j] = Integer.min(res[i][j], 1 + res[i][j - 1]);
+                }
+            }
+        }
+        // 右上到左下 （每个元素都向右看 向上看）
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = matrix[0].length - 1; j >= 0; j--) {
+                if (i - 1 >= 0) {
+                    res[i][j] = Integer.min(res[i][j], 1 + res[i - 1][j]);
+                }
+                if (j + 1 < matrix[0].length) {
+                    res[i][j] = Integer.min(res[i][j], 1 + res[i][j + 1]);
+                }
+            }
+        }
+        // 右下到左上 （每个元素都向右看 向下看）
+        for (int i = matrix.length - 1; i >= 0; i--) {
+            for (int j = matrix[0].length - 1; j >= 0; j--) {
+                if (i + 1 < matrix.length) {
+                    res[i][j] = Integer.min(res[i][j], 1 + res[i + 1][j]);
+                }
+                if (j + 1 < matrix[0].length) {
+                    res[i][j] = Integer.min(res[i][j], 1 + res[i][j + 1]);
+                }
+            }
+        }
+        // 左下到右上 （每个元素都向左看 向下看）
+        for (int i = matrix.length - 1; i >= 0; i--) {
+            for (int j = 0; j < matrix[0].length; j++) {
+                if (i + 1 < matrix.length) {
+                    res[i][j] = Integer.min(res[i][j], 1 + res[i + 1][j]);
+                }
+                if (j - 1 >= 0) {
+                    res[i][j] = Integer.min(res[i][j], 1 + res[i][j - 1]);
+                }
+            }
+        }
+        return res;
+    }
+
+    class Pair {
+        int row;
+        int col;
+
+        public Pair(int row, int col) {
+            this.row = row;
+            this.col = col;
+        }
+    }
+
+    /**
+     * BFS O(n^2)
+     * https://leetcode-cn.com/problems/01-matrix/solution/01ju-zhen-by-leetcode-solution/
+     * 从元素为0的位置开始向四个方向遍历， 每次都更新一圈，将更新好的入队，依次更新0，1，2，。。。
+     *
+     *  0
+     *   0
+     *
+     *  =>
+     *
+     *   1
+     *  101
+     *   101
+     *    1
+     *
+     *  =>
+     *   2
+     *  212
+     * 21012
+     *  21012
+     *   212
+     *    2
+     * @param matrix
+     * @return
+     */
+    public int[][] updateMatrix_v3(int[][] matrix) {
+        int[][] res = new int[matrix.length][matrix[0].length];
+        Boolean[][] visit = new Boolean[matrix.length][matrix[0].length];
+        Queue<Pair> queue = new LinkedList<>();
+        for (int i = 0; i < matrix.length; i++) {
+            Arrays.fill(visit[i], false);
+            for (int j = 0; j < matrix[0].length; j++) {
+                if (matrix[i][j] == 0) {
+                    queue.add(new Pair(i, j));
+                    visit[i][j] = true;
+                    res[i][j] = 0;
+                }
+            }
+        }
+        int[] dx = new int[]{1, 0, -1, 0};
+        int[] dy = new int[]{0, 1, 0, -1};
+        while (!queue.isEmpty()) {
+            Pair poll = queue.poll();
+            for (int i = 0; i < 4; i++) {
+                int nx = poll.row + dx[i];
+                int ny = poll.col + dy[i];
+                if (nx >= 0 && nx < matrix.length && ny >= 0 && ny < matrix[0].length && !visit[nx][ny]) {
+                    res[nx][ny] = res[poll.row][poll.col] + 1;
+                    visit[nx][ny] = true;
+                    queue.add(new Pair(nx, ny));
+                }
+            }
+        }
+        return res;
+    }
+
+
     @Test
     public void test1() {
         d3 o = new d3();
@@ -454,6 +631,9 @@ public class d3 {
 // 用户1的获取推文应当返回一个列表，其中包含一个id为5的推文.
 // 因为用户1已经不再关注用户2.
         System.out.println(twitter.getNewsFeed(1));
+
+        System.out.println(Arrays.toString(o.updateMatrix(new int[][]{{0, 0, 0}, {0, 1, 0}, {0, 0, 0}})));
+        System.out.println(Arrays.toString(o.updateMatrix(new int[][]{{0, 0, 0}, {0, 1, 0}, {1, 1, 1}})));
 
     }
 }
