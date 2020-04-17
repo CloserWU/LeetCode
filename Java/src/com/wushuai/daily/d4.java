@@ -90,7 +90,8 @@ public class d4 {
         }
         System.out.println();
         return ress;
-
+    }
+    public int[][] merge_v2(int[][] intervals) {
         // wrong
         /*Set<Slot> set = new LinkedHashSet<>();
         for (int i = 0; i < intervals.length; i++) {
@@ -140,6 +141,51 @@ public class d4 {
         }
         System.out.println();
         return res;*/
+        return null;
+    }
+
+    /**
+     * 4.17
+     * 55. 跳跃游戏
+     *
+     * @param nums
+     * @return
+     */
+    public boolean canJump(int[] nums) {
+        if (nums.length == 1) {
+            return true;
+        }
+        boolean flag = true;
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] == 0) {
+                flag = false;
+                for (int j = i - 1; j >= 0; j--) {
+                    if (i == nums.length - 1 && i - j < nums[j]) {
+                        flag = true;
+                        break;
+                    }
+                    if (i - j < nums[j]) {
+                        flag = true;
+                        break;
+                    }
+                }
+            }
+            if (!flag) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean canJump_v2(int[] nums) {
+        int maxReach = 0;
+        for (int i = 0; i < nums.length; i++) {
+            maxReach = Integer.max(maxReach - 1, nums[i]);
+            if (maxReach == 0 && i != nums.length - 1) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Test
@@ -147,13 +193,19 @@ public class d4 {
         d4 o = new d4();
         o.merge(new int[][]{{0, 0}, {1, 2}, {5, 5}, {2, 4}, {3, 3}, {5, 6}, {5, 6}, {4, 6}, {0, 0}, {1, 2}, {0, 2}, {4, 5}});
         o.merge(new int[][]{{2, 6}, {6, 8}, {4, 4}, {7, 10}, {5, 5}, {6, 7}, {9, 9}, {6, 10}});
-        o.merge(new int[][]{{2, 6}, {6, 8}, {4, 4}, {7, 10}, {5, 5}, {6, 7}, {9, 9}, {6, 10}, {11,11}});
-        o.merge(new int[][]{{1, 1}, {2, 6}, {6, 8}, {4, 4}, {7, 10}, {5, 5}, {6, 7}, {9, 9}, {6, 10}, {11,11}});
-        o.merge(new int[][]{{2, 2}, {2 ,6}, {6, 8}, {4, 4}, {7, 10}, {5, 5}, {6, 7}, {9, 9}, {6, 10}, {11,11}});
-        o.merge(new int[][]{{2, 6}, {6, 8}, {4, 4}, {7, 10}, {5, 5}, {6, 7}, {9, 9}, {6, 11}, {11,11}});
+        o.merge(new int[][]{{2, 6}, {6, 8}, {4, 4}, {7, 10}, {5, 5}, {6, 7}, {9, 9}, {6, 10}, {11, 11}});
+        o.merge(new int[][]{{1, 1}, {2, 6}, {6, 8}, {4, 4}, {7, 10}, {5, 5}, {6, 7}, {9, 9}, {6, 10}, {11, 11}});
+        o.merge(new int[][]{{2, 2}, {2, 6}, {6, 8}, {4, 4}, {7, 10}, {5, 5}, {6, 7}, {9, 9}, {6, 10}, {11, 11}});
+        o.merge(new int[][]{{2, 6}, {6, 8}, {4, 4}, {7, 10}, {5, 5}, {6, 7}, {9, 9}, {6, 11}, {11, 11}});
         o.merge(new int[][]{{1, 3}, {2, 6}, {8, 10}, {15, 18}});
         o.merge(new int[][]{{1, 4}, {4, 5}});
         o.merge(new int[][]{{1, 3}, {3, 7}, {2, 6}, {2, 8}, {11, 12}, {5, 9}, {0, 7}, {3, 4}});
         o.merge(new int[][]{{1, 10}, {2, 3}, {4, 5}, {6, 7}, {8, 9}});
+
+        System.out.println(o.canJump(new int[]{0}));
+        System.out.println(o.canJump(new int[]{0, 1, 2, 3}));
+        System.out.println(o.canJump(new int[]{4,2,1,0,4,2,1,0,1,2,3,0}));
+        System.out.println(o.canJump(new int[]{3,2,1,0,4}));
+        System.out.println(o.canJump(new int[]{2,3,1,1,4}));
     }
 }
