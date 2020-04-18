@@ -6,7 +6,10 @@ import java.util.*;
 
 /**
  * <p>EventualSafeNodes</p>
- * <p>802</p>
+ * <p>
+ *     802
+ *     有向图判断有无环 -> dfs()
+ * </p>
  *
  * @author wushuai
  * @version 1.0.0
@@ -90,13 +93,13 @@ public class EventualSafeNodes {
         }
         color[idx] = 1;
         int[] edges = graph[idx];
-        for (int edge : edges) {
-            if (color[edge] == 2) {
+        for (int node : edges) {
+            if (color[node] == 2) {
                 // 黑色跳过
                 continue;
             }
-            if (color[edge] == 1 || !dfs(graph, color, edge)) {
-                // 灰色，或此路径有环 退出dfs
+            if (color[node] == 1 || !dfs(graph, color, node)) {
+                // 灰色，或以node开始的路径有环 退出dfs
                 return false;
             }
         }
