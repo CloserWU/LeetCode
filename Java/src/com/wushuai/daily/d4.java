@@ -91,6 +91,7 @@ public class d4 {
         System.out.println();
         return ress;
     }
+
     public int[][] merge_v2(int[][] intervals) {
         // wrong
         /*Set<Slot> set = new LinkedHashSet<>();
@@ -188,6 +189,31 @@ public class d4 {
         return true;
     }
 
+
+    /**
+     * 4.19
+     * 11. 盛最多水的容器
+     *
+     * 双指针 *****
+     *
+     * @param height
+     * @return
+     */
+    public int maxArea(int[] height) {
+        int left = 0, right = height.length - 1;
+        int res = 0;
+        while (left < right) {
+            res = Integer.max(res, Integer.min(height[left], height[right]) * (right - left));
+            if (height[left] > height[right]) {
+                right--;
+            } else {
+                left++;
+            }
+        }
+        return res;
+    }
+
+
     @Test
     public void test() {
         d4 o = new d4();
@@ -204,8 +230,11 @@ public class d4 {
 
         System.out.println(o.canJump(new int[]{0}));
         System.out.println(o.canJump(new int[]{0, 1, 2, 3}));
-        System.out.println(o.canJump(new int[]{4,2,1,0,4,2,1,0,1,2,3,0}));
-        System.out.println(o.canJump(new int[]{3,2,1,0,4}));
-        System.out.println(o.canJump(new int[]{2,3,1,1,4}));
+        System.out.println(o.canJump(new int[]{4, 2, 1, 0, 4, 2, 1, 0, 1, 2, 3, 0}));
+        System.out.println(o.canJump(new int[]{3, 2, 1, 0, 4}));
+        System.out.println(o.canJump(new int[]{2, 3, 1, 1, 4}));
+
+        System.out.println(o.maxArea(new int[]{1,8,6,2,5,4,8,3,7}));
+        System.out.println(o.maxArea(new int[]{1,8,6,2,5,4,8,3,6}));
     }
 }
