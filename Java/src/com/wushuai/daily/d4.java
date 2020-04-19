@@ -193,7 +193,7 @@ public class d4 {
     /**
      * 4.19
      * 11. 盛最多水的容器
-     *
+     * <p>
      * 双指针 *****
      *
      * @param height
@@ -211,6 +211,46 @@ public class d4 {
             }
         }
         return res;
+    }
+
+    /**
+     * 466. 统计重复个数
+     *
+     * 双指针， s1一个针织， s2一个指针，顺序操作，当s1指针走到末尾，则s1的个数加一，指针归零
+     * 当s2的指针走到末尾，s2个数加一，指针归零
+     * 到最后，nums2说明匹配个几个s2
+     * 题目要求每n2个s2为一组，则答案就是num2 / n2
+     *
+     *
+     * @param s1
+     * @param n1
+     * @param s2
+     * @param n2
+     * @return
+     */
+    public int getMaxRepetitions(String s1, int n1, String s2, int n2) {
+        // 1720ms
+        // 实验可得，对字符数组的操作快于对字符串的操作
+        // 直接用s1.charAt() 会超时，数组不会1720ms
+        int index = 0, num1 = 0, num2 = 0;
+        char[] c1 = s1.toCharArray();
+        char[] c2 = s2.toCharArray();
+        while (num1 < n1) {
+            for (int i = 0; i < c1.length; i++) {
+                if (c1[i] == c2[index]) {
+                    // s2走到末尾， 归零
+                    if (index == c2.length - 1) {
+                        index = 0;
+                        num2++;
+                    } else {
+                        index++;
+                    }
+                }
+            }
+            // s1走到末尾，归零，还有剩余s1个数，则重新开始
+            num1++;
+        }
+        return num2 / n2;
     }
 
 
@@ -234,7 +274,13 @@ public class d4 {
         System.out.println(o.canJump(new int[]{3, 2, 1, 0, 4}));
         System.out.println(o.canJump(new int[]{2, 3, 1, 1, 4}));
 
-        System.out.println(o.maxArea(new int[]{1,8,6,2,5,4,8,3,7}));
-        System.out.println(o.maxArea(new int[]{1,8,6,2,5,4,8,3,6}));
+        System.out.println(o.maxArea(new int[]{1, 8, 6, 2, 5, 4, 8, 3, 7}));
+        System.out.println(o.maxArea(new int[]{1, 8, 6, 2, 5, 4, 8, 3, 6}));
+
+        System.out.println(o.getMaxRepetitions("acb", 4, "ab", 2));
+        System.out.println(o.getMaxRepetitions("acb", 8, "cb", 2));
+        System.out.println(o.getMaxRepetitions("acb", 8, "cbv", 2));
+        System.out.println(o.getMaxRepetitions("acb", 8, "cbb", 2));
+        System.out.println(o.getMaxRepetitions("acb", 7, "cbb", 2));
     }
 }
