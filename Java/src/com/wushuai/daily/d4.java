@@ -6,7 +6,9 @@ import java.util.*;
 
 /**
  * <p>d4</p>
- * <p>description</p>
+ * <p>
+ *      BFS时， 对于访问标记数组，一定要加入队列时，就标记为已访问，不能等出队时再标记已访问， 这样会在队列中大量加入重复元素
+ * </p>
  *
  * @author wushuai
  * @version 1.0.0
@@ -33,8 +35,12 @@ public class d4 {
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
             Slot slot = (Slot) o;
             return left == slot.left &&
                     right == slot.right;
@@ -191,7 +197,7 @@ public class d4 {
 
 
     /**
-     * 4.19
+     * 4.18
      * 11. 盛最多水的容器
      * <p>
      * 双指针 *****
@@ -214,14 +220,13 @@ public class d4 {
     }
 
     /**
-     * 4.20
+     * 4.19
      * 466. 统计重复个数
-     *
+     * <p>
      * 双指针， s1一个针织， s2一个指针，顺序操作，当s1指针走到末尾，则s1的个数加一，指针归零
      * 当s2的指针走到末尾，s2个数加一，指针归零
      * 到最后，nums2说明匹配个几个s2
      * 题目要求每n2个s2为一组，则答案就是num2 / n2
-     *
      *
      * @param s1
      * @param n1
@@ -254,6 +259,75 @@ public class d4 {
         return num2 / n2;
     }
 
+    class Pair {
+        int row;
+        int col;
+
+        public Pair(int row, int col) {
+            this.row = row;
+            this.col = col;
+        }
+    }
+
+    /**
+     * BFS时， 对于访问标记数组，一定要加入队列时，就标记为已访问，不能等出队时再标记已访问， 这样会在队列中大量加入重复元素
+     * @param visit
+     * @param grid
+     * @param pair
+     */
+    void bfs(boolean[][] visit, char[][] grid, Pair pair) {
+        Queue<Pair> queue = new LinkedList<>();
+        queue.add(pair);
+        visit[pair.row][pair.col] = true;
+        while (!queue.isEmpty()) {
+            Pair p = queue.poll();
+            if (p.row > 0 && grid[p.row - 1][p.col] == '1' && !visit[p.row - 1][p.col]) {
+                queue.add(new Pair(p.row - 1, p.col));
+                visit[p.row - 1][p.col] = true;
+            }
+            if (p.col > 0 && grid[p.row][p.col - 1] == '1' && !visit[p.row][p.col - 1]) {
+                queue.add(new Pair(p.row, p.col - 1));
+                visit[p.row][p.col - 1] = true;
+            }
+            if (p.row < grid.length - 1 && grid[p.row + 1][p.col] == '1' && !visit[p.row + 1][p.col]) {
+                queue.add(new Pair(p.row + 1, p.col));
+                visit[p.row + 1][p.col] = true;
+            }
+            if (p.col < grid[0].length - 1 && grid[p.row][p.col + 1] == '1' && !visit[p.row][p.col + 1]) {
+                queue.add(new Pair(p.row, p.col + 1));
+                visit[p.row][p.col + 1] = true;
+            }
+        }
+    }
+
+
+    /**
+     * 4.20
+     * 200. 岛屿数量
+     *
+     * @param grid
+     * @return
+     */
+    public int numIslands(char[][] grid) {
+        if (grid.length == 0) {
+            return 0;
+        }
+        boolean[][] visit = new boolean[grid.length][grid[0].length];
+        for (int i = 0; i < visit.length; i++) {
+            Arrays.fill(visit[i], false);
+        }
+        int res = 0;
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[0].length; j++) {
+                if (!visit[i][j] && grid[i][j] == '1') {
+                    res++;
+                    bfs(visit, grid, new Pair(i, j));
+                }
+            }
+        }
+        return res;
+    }
+
 
     @Test
     public void test() {
@@ -283,5 +357,7 @@ public class d4 {
         System.out.println(o.getMaxRepetitions("acb", 8, "cbv", 2));
         System.out.println(o.getMaxRepetitions("acb", 8, "cbb", 2));
         System.out.println(o.getMaxRepetitions("acb", 7, "cbb", 2));
+
+
     }
 }
