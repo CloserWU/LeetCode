@@ -2,8 +2,6 @@ package com.wushuai.offer;
 
 import org.junit.Test;
 
-import java.text.DecimalFormat;
-
 /**
  * <p>offer2</p>
  * <p>description</p>
@@ -99,6 +97,101 @@ public class offer2 {
     public boolean isNumber(String s) {
         return s.matches("^(\\+|-)?(([0-9]*\\.[0-9]+)|([0-9]+\\.[0-9]*)|[0-9]+)(e(\\+|-)?[0-9]+)?$");
     }
+
+
+    /**
+     * 面试题20. 调整数组顺序使奇数位于偶数前面
+     * @param nums
+     * @return
+     */
+    public int[] exchange(int[] nums) {
+        int left = 0, right = nums.length - 1;
+        while (left < right) {
+            if ((nums[left] & 1) != 1) {
+                int tmp = nums[left];
+                nums[left] = nums[right];
+                nums[right] = tmp;
+                right--;
+            } else {
+                left++;
+            }
+        }
+        return nums;
+    }
+
+    /**
+     * 面试题22. 链表中倒数第k个节点
+     * @param head
+     * @param k
+     * @return
+     */
+    public ListNode getKthFromEnd(ListNode head, int k) {
+        ListNode res = head;
+        int i = 0;
+        while (head != null) {
+            i++;
+            if (i >= k) {
+                res = res.next;
+            }
+            head = head.next;
+        }
+        return res;
+    }
+
+    /**
+     * 面试题24. 反转链表
+     * @param head
+     * @return
+     */
+    public ListNode reverseList(ListNode head) {
+        if (head == null) {
+            return null;
+        }
+        ListNode pre = null;
+        ListNode next = head.next;
+        while (next != null) {
+            head.next = pre;
+            pre = head;
+            head = next;
+            next = next.next;
+        }
+        head.next = pre;
+        return head;
+    }
+
+    /**
+     * 面试题25. 合并两个排序的链表
+     * @param l1
+     * @param l2
+     * @return
+     */
+    public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
+        if (l1 == null) {
+            return l2;
+        }
+        if (l2 == null) {
+            return l1;
+        }
+        ListNode root = new ListNode(-1);
+        root.next = l1;
+        ListNode pre = root;
+        ListNode bak = root;
+        while (l2 != null) {
+            if (l1 == null || l1.val >= l2.val) {
+                ListNode l2Next = l2.next;
+                pre.next = l2;
+                l2.next = l1;
+                pre = l2;
+                l2 = l2Next;
+            } else {
+                l1 = l1.next;
+                pre = pre.next;
+            }
+        }
+        return bak.next;
+    }
+
+
 
     public class TreeNode {
         int val;
