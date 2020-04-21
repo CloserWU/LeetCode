@@ -2,6 +2,8 @@ package com.wushuai.math;
 
 import org.junit.Test;
 
+import java.util.*;
+
 /**
  * <p>JudgePoint24</p>
  * <p>679</p>
@@ -29,7 +31,6 @@ public class JudgePoint24 {
 
     /**
      * 基本24点，不带括号
-     * <p>
      * 左结合
      *
      * @param nums
@@ -57,9 +58,7 @@ public class JudgePoint24 {
     }
 
     /**
-     * 679. 24 点游戏
-     * 高级24点，带括号
-     * <p>
+     * 高级24点，带括号，实型运算
      * 左结合、右结合、中结合
      *
      * @param nums
@@ -133,21 +132,85 @@ public class JudgePoint24 {
         return false;
     }
 
+    boolean solve(List<Double> list, int[] op) {
+        if (list.size() == 1) {
+            if (Math.abs(list.get(0) - 24.0) < 1e-3) {
+                return true;
+            }
+            return false;
+        }
+
+        for (int i = 0; i < list.size(); i++) {
+            for (int j = 0; j < list.size(); j++) {
+                if (i == j) {
+                    continue;
+                }
+                for (int k = 0; k < op.length; k++) {
+                    // 临时数组，不能直接在list上修改，要保证list的元素顺序不会变，外层两个for才是正确有效的
+                    // 复制数组
+                    List<Double> tt = new ArrayList<>(list);
+                    double a = list.get(i);
+                    double b = list.get(j);
+                    double tmp = compute(op[k], a, b);
+                    tt.remove(a);
+                    tt.remove(b);
+                    tt.add(tmp);
+                    boolean flag = solve(tt, op);
+                    if (flag) {
+                        return true;
+                    }
+
+                    tt = new ArrayList<>(list);
+                    tmp = compute(op[k], b, a);
+                    tt.remove(a);
+                    tt.remove(b);
+                    tt.add(tmp);
+                    flag = solve(tt, op);
+                    if (flag) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 679. 24 点游戏
+     * 顶级24点，运算符带括号，且牌可以以任意顺序与操作符结合(牌可打乱顺序)，且运算过程为实型运算
+     * 最初有4个数字，4个运算符
+     * 首先选出任意两个数字（无序）12种选法，再选一个操作符，4种选法。问题变为3个数字，4个运算符
+     * 然后选出两个数字（无序）6种选法，再选一个操作符，4种选法。问题变为2个数字，4个运算符
+     * 最后选两个数字（无序）2种选法，再选一个操作符，4种选法。结束
+     * 共12 * 4 * 6 * 4 * 2 * 4 = 9216种可能，暴力枚举即可
+     *
+     * @param nums
+     * @return
+     */
+    public boolean judgePoint24_v3(int[] nums) {
+        int[] op = new int[]{0, 1, 2, 3};
+        List<Double> list = new ArrayList<>();
+        for (int i = 0; i < nums.length; i++) {
+            list.add((double) nums[i]);
+        }
+        return solve(list, op);
+    }
+
 
     @Test
     public void test() {
         JudgePoint24 o = new JudgePoint24();
-        System.out.println(o.judgePoint24_v2(new int[]{1, 2, 3, 4}));
-        System.out.println(o.judgePoint24_v2(new int[]{1, 6, 7, 5}));
-        System.out.println(o.judgePoint24_v2(new int[]{1, 2, 3, 5}));
-        System.out.println(o.judgePoint24_v2(new int[]{8, 8, 7, 1}));
-        System.out.println(o.judgePoint24_v2(new int[]{1, 2, 1, 2}));
-        System.out.println(o.judgePoint24_v2(new int[]{6, 6, 6, 6}));
-        System.out.println(o.judgePoint24_v2(new int[]{6, 6, 6, 5}));
-        System.out.println(o.judgePoint24_v2(new int[]{2, 3, 6, 6}));
-        System.out.println(o.judgePoint24_v2(new int[]{6, 2, 6, 3}));
-        System.out.println(o.judgePoint24_v2(new int[]{4, 1, 8, 7}));
-        System.out.println(o.judgePoint24_v2(new int[]{3, 3, 8, 2}));
+        System.out.println(o.judgePoint24_v3(new int[]{1, 2, 3, 4}));
+        System.out.println(o.judgePoint24_v3(new int[]{1, 6, 7, 5}));
+        System.out.println(o.judgePoint24_v3(new int[]{1, 2, 3, 5}));
+        System.out.println(o.judgePoint24_v3(new int[]{8, 8, 7, 1}));
+        System.out.println(o.judgePoint24_v3(new int[]{1, 2, 1, 2}));
+        System.out.println(o.judgePoint24_v3(new int[]{6, 6, 6, 6}));
+        System.out.println(o.judgePoint24_v3(new int[]{6, 6, 6, 5}));
+        System.out.println(o.judgePoint24_v3(new int[]{2, 3, 6, 6}));
+        System.out.println(o.judgePoint24_v3(new int[]{6, 2, 6, 3}));
+        System.out.println(o.judgePoint24_v3(new int[]{4, 1, 8, 7}));
+        System.out.println(o.judgePoint24_v3(new int[]{3, 3, 8, 2}));
         /*
 [1, 6, 7, 5]
 [4,1,8,7]
