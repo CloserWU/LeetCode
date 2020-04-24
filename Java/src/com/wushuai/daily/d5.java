@@ -2,10 +2,7 @@ package com.wushuai.daily;
 
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 /**
  * <p>d5</p>
@@ -121,7 +118,9 @@ public class d5 {
             return 0;
         }
         int[] temp = new int[nums.length];
-        return reversePairs(nums, 0, nums.length - 1, temp);
+        int pairs = reversePairs(nums, 0, nums.length - 1, temp);
+        System.out.println(Arrays.toString(nums));
+        return pairs;
     }
 
     int reversePairs(int[] nums, int left, int right, int[] temp) {
