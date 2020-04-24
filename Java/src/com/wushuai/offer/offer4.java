@@ -187,6 +187,8 @@ public class offer4 {
         int rightPairs = reversePairs(nums, mid + 1, right, temp);
 
         int reversePairs = leftPairs + rightPairs;
+        // 到这一步时， [left-mid], [mid-right]两个子集合已经是有序的了，
+        // 若是nums[mid] <= nums[mid + 1]，则[left-right]也刚好有序，就不需要merge了
         if (nums[mid] <= nums[mid + 1]) {
             return reversePairs;
         }
@@ -198,6 +200,8 @@ public class offer4 {
 
     /**
      * [left, mid] 有序，[mid + 1, right] 有序
+     *
+     * merge.png
      *
      * @param nums
      * @param left
@@ -211,6 +215,7 @@ public class offer4 {
         for (int i = left; i <= right; i++) {
             temp[i] = nums[i];
         }
+        // i，j分别指向[left-mid]，[mid+1,right]的投不，即合并两个有序数组的操作
         int i = left;
         int j = mid + 1;
         int res = 0;
@@ -563,7 +568,7 @@ public class offer4 {
             for (int j = i + 1; j < nums.length; j++) {
                 if (nums[i] + nums[j] == target) {
                     return new int[]{nums[i], nums[j]};
-                } else if (nums[i] + nums[j] == target) {
+                } else if (nums[i] + nums[j] > target) {
                     break;
                 }
             }

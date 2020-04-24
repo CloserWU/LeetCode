@@ -80,9 +80,9 @@ public class dcontest19 {
 
     /**
      * 1345. 跳跃游戏 IV
-     *
+     * <p>
      * 前后的值会相互影响，所以不能用dp
-     *
+     * <p>
      * WRONG!
      *
      * @param arr
@@ -120,6 +120,53 @@ public class dcontest19 {
         return dp[arr.length - 1];
     }
 
+    public int minJumps_v2(int[] arr) {
+//        倒排加速(map既起到了倒排加速作用，又起到了记录值是否被访问的作用，如果有一个值被访问过了，删除该值对应的键)
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        int[] dist = new int[arr.length];
+        Arrays.fill(dist, 1000000);
+        boolean[] visit = new boolean[arr.length];
+        Queue<Integer> queue = new LinkedList<>();
+        dist[arr.length - 1] = 0;
+        queue.add(arr.length - 1);
+        visit[arr.length - 1] = true;
+        for (int i = 0; i < arr.length - 1; i++) {
+            List<Integer> list;
+            if (map.containsKey(arr[i])) {
+                list = map.get(arr[i]);
+            } else {
+                list = new ArrayList<>();
+            }
+            list.add(i);
+            map.put(arr[i], list);
+        }
+        while (!queue.isEmpty()) {
+            Integer poll = queue.poll();
+            if (poll + 1 < arr.length && !visit[poll + 1] && map.containsKey(arr[poll + 1])) {
+                dist[poll + 1] = Integer.min(dist[poll + 1], dist[poll] + 1);
+                queue.add(poll + 1);
+                visit[poll + 1] = true;
+            }
+            if (poll - 1 >= 0 && !visit[poll - 1] && map.containsKey(arr[poll - 1])) {
+                dist[poll - 1] = Integer.min(dist[poll - 1], dist[poll] + 1);
+                queue.add(poll - 1);
+                visit[poll - 1] = true;
+            }
+            if (map.containsKey(arr[poll])) {
+                List<Integer> list = map.get(arr[poll]);
+                for (Integer v : list) {
+                    if (!visit[v]) {
+                        visit[v] = true;
+                        dist[v] = Integer.min(dist[v], dist[poll] + 1);
+                        queue.add(v);
+                    }
+                }
+                map.remove(arr[poll]);
+            }
+        }
+        return dist[0];
+    }
+
     @Test
     public void test() {
         dcontest19 o = new dcontest19();
@@ -138,10 +185,10 @@ public class dcontest19 {
 //        System.out.println(o.angleClock(4, 50));
 //        System.out.println(o.angleClock(12, 0));
 
-        System.out.println(o.minJumps(new int[]{100, -23, -23, 404, 100, 23, 23, 23, 3, 404}));
-        System.out.println(o.minJumps(new int[]{7}));
-        System.out.println(o.minJumps(new int[]{7, 6, 9, 6, 9, 6, 9, 7}));
-        System.out.println(o.minJumps(new int[]{6, 1, 9}));
-        System.out.println(o.minJumps(new int[]{11, 22, 7, 7, 7, 7, 7, 7, 7, 22, 13}));
+        System.out.println(o.minJumps_v2(new int[]{100, -23, -23, 404, 100, 23, 23, 23, 3, 404}));
+        System.out.println(o.minJumps_v2(new int[]{7}));
+        System.out.println(o.minJumps_v2(new int[]{7, 6, 9, 6, 9, 6, 9, 7}));
+        System.out.println(o.minJumps_v2(new int[]{6, 1, 9}));
+        System.out.println(o.minJumps_v2(new int[]{11, 22, 7, 7, 7, 7, 7, 7, 7, 22, 13}));
     }
 }

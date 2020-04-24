@@ -109,15 +109,6 @@ public class GetSkyline {
         return res;
     }
 
-    class Pair {
-        int x;
-        int y;
-
-        public Pair(int x, int y) {
-            this.x = x;
-            this.y = y;
-        }
-    }
 
     /**
      * wrong
@@ -174,6 +165,57 @@ public class GetSkyline {
         tmp.add(right);
         tmp.add(0);
         res.add(tmp);
+        return res;
+    }
+
+    public List<List<Integer>> getSkyline_v4(int[][] buildings) {
+        // 建立优先队列，左端点高度标记为负值放入，右端点高度标记为正值放入，并按先x轴后y轴排序
+        Queue<int[]> queue = new PriorityQueue<>(new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                if (o1[0] == o2[0]) {
+                    return Integer.compare(o1[1], o2[1]);
+                }
+                return Integer.compare(o1[0], o2[0]);
+            }
+        });
+        for (int[] building : buildings) {
+            // 左端点
+            queue.add(new int[]{building[0], -building[2]});
+            // 右端点
+            queue.add(new int[]{building[1], building[2]});
+        }
+        List<List<Integer>> res = new ArrayList<>();
+        // 高度哈希表， key：高度 ，由高到低排序。  val：此高度出现次数
+        Map<Integer, Integer> height = new TreeMap<>(new Comparator<Integer>() {
+            @Override
+            public int compare(Integer o1, Integer o2) {
+                return Integer.compare(o2, o1);
+            }
+        });
+        int cntHigh = 0, cntLeft = 0;
+        height.put(0, 1);
+        while (!queue.isEmpty()) {
+            int[] arr = queue.poll();
+            // 左端点，放入高度hash表
+            if (arr[1] < 0) {
+                height.put(-arr[1], height.getOrDefault(-arr[1], 0) + 1);
+            } else {
+                // 右端点，减少此高度出现次数一次
+                // 若减为0，则清除
+                height.put(arr[1], height.get(arr[1]) - 1);
+                if (height.get(arr[1]) == 0) {
+                    height.remove(arr[1]);
+                }
+            }
+            // 当前最大高度，若大了，就整理放入res
+            int maxHigh = height.keySet().iterator().next();
+            if (maxHigh != cntHigh) {
+                cntHigh = maxHigh;
+                cntLeft = arr[0];
+                res.add(Arrays.asList(cntLeft, cntHigh));
+            }
+        }
         return res;
     }
 

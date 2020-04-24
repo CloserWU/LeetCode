@@ -2,7 +2,10 @@ package com.wushuai.daily;
 
 import org.junit.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 
 /**
  * <p>d5</p>
@@ -70,7 +73,7 @@ public class d5 {
             for (int i = 0; i < size; i++) {
                 TreeNode head = queue.poll();
                 row.add(head.val);
-                if (head.right!= null) {
+                if (head.right != null) {
                     queue.add(head.right);
                 }
                 if (head.left != null) {
@@ -85,9 +88,83 @@ public class d5 {
         return res;
     }
 
+    /**
+     * 4.23
+     * 面试题 08.11. 硬币
+     * <p>
+     * 完全背包
+     *
+     * @param n
+     * @return
+     */
+    public int waysToChange(int n) {
+        int[] dp = new int[n + 1];
+        int[] coins = new int[]{25, 10, 5, 1};
+        dp[0] = 1;
+        for (int i = 0; i < 4; i++) {
+            for (int j = coins[i]; j < dp.length; j++) {
+                dp[j] = (dp[j - coins[i]] + dp[j]) % 1000000007;
+            }
+        }
+        return dp[n];
+    }
+
+    /**
+     * 4.24  aha, birthday!!!
+     * 面试题51. 数组中的逆序对
+     *
+     * @param nums
+     * @return
+     */
+    public int reversePairs(int[] nums) {
+        if (nums.length < 2) {
+            return 0;
+        }
+        int[] temp = new int[nums.length];
+        return reversePairs(nums, 0, nums.length - 1, temp);
+    }
+
+    int reversePairs(int[] nums, int left, int right, int[] temp) {
+        if (right == left) {
+            return 0;
+        }
+        int mid = (left + right) >>> 1;
+
+        int leftPairs = reversePairs(nums, left, mid, temp);
+        int rightPairs = reversePairs(nums, mid + 1, right, temp);
+
+        int allParis = leftPairs + rightPairs;
+        if (nums[mid] <= nums[mid + 1]) {
+            return allParis;
+        }
+
+        return allParis + mergeAndSort(nums, left, right, mid, temp);
+    }
+
+    int mergeAndSort(int[] nums, int left, int right, int mid, int[] temp) {
+        int i = left, j = mid + 1, res = 0;
+        if (right + 1 - left >= 0) {
+            System.arraycopy(nums, left, temp, left, right + 1 - left);
+        }
+        for (int k = left; k <= right; k++) {
+            if (i > mid) {
+                nums[k] = temp[j++];
+            } else if (j > right) {
+                nums[k] = temp[i++];
+            } else if (temp[i] <= temp[j]) {
+                nums[k] = temp[i++];
+            } else {
+                nums[k] = temp[j++];
+                res += (mid - i + 1);
+            }
+        }
+        return res;
+    }
+
     @Test
     public void test() {
         d5 o = new d5();
-
+        System.out.println(o.waysToChange(10));
+        System.out.println(o.reversePairs(new int[]{5, 2, 4, 9, 8, 7, 4, 5, 3, 2, 1, 6, 85, 2154, 15, 5, 4, 21, 5, 4, 1, 2, 5, 4, 1}));
     }
 }
