@@ -160,10 +160,52 @@ public class d5 {
         return res;
     }
 
+    /**
+     * 4.25
+     * 46. 全排列
+     *
+     * 经典回溯
+     *
+     * @param nums
+     * @return
+     */
+    public List<List<Integer>> permute(int[] nums) {
+        List<List<Integer>> res = new ArrayList<>();
+        boolean[] visit = new boolean[nums.length];
+        backTrack(res, new ArrayList<>(), visit, nums);
+        return res;
+    }
+
+    void backTrack(List<List<Integer>> res, List<Integer> list, boolean[] visit, int[] nums) {
+        if (list.size() == visit.length) {
+            // 终态
+            List<Integer> tmp = new ArrayList<>(list);
+            // res.add(list) 最后会返回空，引入res add的是list的<引用>，而list在回溯时会逐个清除，所以用建立<new>一个tmp
+            res.add(tmp);
+            return;
+        }
+        for (int i = 0; i < nums.length; i++) {
+            if (!visit[i]) {
+                // 加入状态
+                visit[i] = true;
+                list.add(nums[i]);
+                backTrack(res, list, visit, nums);
+                // 还原状态
+                visit[i] = false;
+                list.remove(list.size() - 1);
+            }
+        }
+    }
+
     @Test
     public void test() {
         d5 o = new d5();
         System.out.println(o.waysToChange(10));
         System.out.println(o.reversePairs(new int[]{5, 2, 4, 9, 8, 7, 4, 5, 3, 2, 1, 6, 85, 2154, 15, 5, 4, 21, 5, 4, 1, 2, 5, 4, 1}));
+
+        List<List<Integer>> lists = o.permute(new int[]{1, 2, 3});
+        for (List<Integer> list : lists){
+            System.out.println(list);
+        }
     }
 }
