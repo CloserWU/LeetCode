@@ -62,6 +62,7 @@ public class contest186 {
 
     /**
      * 5394. 对角线遍历 II
+     * MLE
      *
      * @param nums
      * @return
@@ -96,6 +97,82 @@ public class contest186 {
         return Arrays.copyOf(res, idx);
     }
 
+    /**
+     * 左下到右上的对角线，每一条对角线的 i + j 值都相同
+     * 左上到右下的对角线，每一条对角线的 i - j 值都相同
+     *
+     * @param nums
+     * @return
+     */
+    public int[] findDiagonalOrderV2(List<List<Integer>> nums) {
+        Map<Integer, List<Integer>> map = new TreeMap<>(new Comparator<Integer>() {
+            @Override
+            public int compare(Integer o1, Integer o2) {
+                return Integer.compare(o1, o2);
+            }
+        });
+        int len = 0;
+        for (int i = 0; i < nums.size(); i++) {
+            List<Integer> list = nums.get(i);
+            for (int j = 0; j < list.size(); j++) {
+                List<Integer> val;
+                if (map.containsKey(i + j)) {
+                    val = map.get(i + j);
+                } else {
+                    val = new ArrayList<>();
+                }
+                len++;
+                val.add(list.get(j));
+                map.put(i + j, val);
+            }
+        }
+        int[] res = new int[len];
+        int idx = 0;
+        for (Map.Entry<Integer, List<Integer>> entry : map.entrySet()) {
+            List<Integer> value = entry.getValue();
+            for (int i = value.size() - 1; i >= 0; i--) {
+                res[idx++] = value.get(i);
+            }
+        }
+        return res;
+    }
+
+    /**
+     * 1425. 带限制的子序列和
+     * DP + 双端队列获取窗口值中的最大值，
+     * 队列中放的是dp数组的范围内最大值，每次入队的都是计算后的dp数组值
+     * 队列要先出队（先头在尾）再入队
+     * dp[i] = {max(dp[i - j] + nums[i], nums[i]) | 1 <= j <= k}
+     *
+     * @param nums
+     * @param k
+     * @return
+     */
+    public int constrainedSubsetSum(int[] nums, int k) {
+        int[] dp = new int[nums.length];
+        dp[0] = nums[0];
+        int res = dp[0];
+        Deque<Integer> deque = new LinkedList<>();
+        deque.addLast(0);
+        for (int i = 1; i < nums.length; i++) {
+            // 出口头部是最大值，尾部是最小值
+            dp[i] = Integer.max(dp[deque.getFirst()] + nums[i], nums[i]);
+            //窗口右滑
+            // 队列满，或窗口最右是窗口内最大的数，则执行头部出队操作
+            if (deque.size() == k || i - deque.getFirst() == k) {
+                deque.pollFirst();
+            }
+            // 若将要新加入的元素大于尾部，则尾部出队
+            while (deque.size() > 0 && dp[i] > dp[deque.getLast()]) {
+                deque.pollLast();
+            }
+            // 加入新元素（已经计算好的下标）
+            deque.addLast(i);
+            res = Integer.max(res, dp[i]);
+        }
+        return res;
+    }
+
     @Test
     public void test() {
         contest186 o = new contest186();
@@ -106,16 +183,9 @@ public class contest186 {
 //        System.out.println(o.maxScore("0101010"));
 //        System.out.println(o.maxScore("111110000"));
 //        System.out.println(o.maxScore(new int[]{96, 90, 41, 82, 39, 74, 64, 50, 30}, 8));
-        List<Integer> list = new ArrayList<>();
-        list.add(1);
-        list.add(1);
-        list.add(1);
-        list.add(1);
-        list.add(1);
-        List<List<Integer>> lists = new ArrayList<>();
-        lists.add(list);
-        lists.add(list);
-        System.out.println(Arrays.toString(o.findDiagonalOrder(lists)));
+        System.out.println(o.constrainedSubsetSum(new int[]{10, 2, -10, 5, 20}, 2));
+        System.out.println(o.constrainedSubsetSum(new int[]{-1, -2, -3}, 1));
+        System.out.println(o.constrainedSubsetSum(new int[]{10, -2, -10, -5, 20}, 2));
 
     }
 }

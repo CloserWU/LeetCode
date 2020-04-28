@@ -76,6 +76,38 @@ public class d6 {
         return left == right && nums[left] == target ? left : -1;
     }
 
+    /**
+     * 4.28
+     * 面试题56 - I. 数组中数字出现的次数
+     *
+     * @param nums
+     * @return
+     */
+    public int[] singleNumbers(int[] nums) {
+        // 找到 两个出现次数2为1的ab的异或和a^b，全员异或即可
+        int ret = 0;
+        for (int num : nums) {
+            ret ^= num;
+        }
+        // 然后找到二进制ret中最低位1的所在位，用&与操作
+        int mask = 1;
+        while ((ret & mask) == 0) {
+            mask <<= 1;
+        }
+        // nums每个数都与mask异或，就能将nums分为两组
+        // 且两个相同的数必定能分到同一组，
+        // 两个不同的数必定能分到不同组 -> 因为这一位是1，表示a和b在这一位上一个1一个0，1和0 &与0的结果是不同的，能分为两组
+        int a = 0, b = 0;
+        for (int num : nums) {
+            if ((num & mask) == 0) {
+                a ^= num;
+            } else {
+                b ^= num;
+            }
+        }
+        return new int[]{a, b};
+    }
+
     @Test
     public void test() {
         d6 o = new d6();
@@ -89,9 +121,9 @@ public class d6 {
         System.out.println(o.search(new int[]{0, 1, 2, 3, 4, 5, 6, 7}, 0));
         System.out.println(o.search(new int[]{0, 1, 2, 3, 4, 5, 6, 7}, 8));
         System.out.println(o.search(new int[]{0, 1, 2, 3, 4, 5, 6, 7}, 6));
-        System.out.println(o.search(new int[]{2,3,4,5,1}, 4));
-        System.out.println(o.search(new int[]{2,3,4,5,1}, 5));
-        System.out.println(o.search(new int[]{2,3,4,5,1}, 1));
+        System.out.println(o.search(new int[]{2, 3, 4, 5, 1}, 4));
+        System.out.println(o.search(new int[]{2, 3, 4, 5, 1}, 5));
+        System.out.println(o.search(new int[]{2, 3, 4, 5, 1}, 1));
         System.out.println(o.search(new int[]{5, 6, 7, 0, 1, 2, 3}, 6));
         System.out.println(o.search(new int[]{5, 6, 7, 0, 1, 2, 3}, 5));
         System.out.println(o.search(new int[]{5, 6, 7, 0, 1, 2, 3}, 3));
