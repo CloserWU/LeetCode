@@ -108,6 +108,77 @@ public class d6 {
         return new int[]{a, b};
     }
 
+    interface MountainArray {
+        public int get(int index);
+
+        public int length();
+    }
+
+    /**
+     * 4.29
+     * 1095. 山脉数组中查找目标值
+     *
+     * @param target
+     * @param mountainArr
+     * @return
+     */
+    public int findInMountainArray(int target, MountainArray mountainArr) {
+        int peek = findPeek(mountainArr);
+        System.out.println(peek);
+        int res = binarySearch(0, peek, mountainArr, target);
+        if (res != -1) {
+            return res;
+        }
+        return binarySearchReverse(peek, mountainArr.length() - 1, mountainArr, target);
+
+    }
+
+    int findPeek(MountainArray mountainArr) {
+        int left = 0, right = mountainArr.length() - 1;
+        while (left < right) {
+            int mid = (left + right) >>> 1;
+            int midNum = mountainArr.get(mid);
+            int rightNum = mountainArr.get(mid + 1);
+            if (midNum < rightNum) {
+                left = mid + 1;
+            } else {
+                right = mid  -1;
+            }
+        }
+        return left;
+    }
+
+    int binarySearch(int left, int right, MountainArray mountainArr, int target) {
+        while (left <= right) {
+            int mid = (left + right) >>> 1;
+            int midNum = mountainArr.get(mid);
+            if (midNum > target) {
+                right = mid - 1;
+            } else if (midNum < target) {
+                left = mid + 1;
+            } else {
+                return mid;
+            }
+        }
+        return -1;
+    }
+
+    int binarySearchReverse(int left, int right, MountainArray mountainArr, int target) {
+        while (left <= right) {
+            int mid = (left + right) >>> 1;
+            int midNum = mountainArr.get(mid);
+            if (midNum > target) {
+                left = mid + 1;
+            } else if (midNum < target) {
+                right = mid - 1;
+            } else {
+                return mid;
+            }
+        }
+        return -1;
+    }
+
+
     @Test
     public void test() {
         d6 o = new d6();
