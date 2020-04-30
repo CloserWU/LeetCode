@@ -142,7 +142,7 @@ public class d6 {
             if (midNum < rightNum) {
                 left = mid + 1;
             } else {
-                right = mid  -1;
+                right = mid - 1;
             }
         }
         return left;
@@ -176,6 +176,33 @@ public class d6 {
             }
         }
         return -1;
+    }
+
+
+    /**
+     * 4.30
+     * 202. 快乐数
+     *
+     * @param n
+     * @return
+     */
+    public boolean isHappy(int n) {
+        while (n != 1) {
+            n = nextN(n);
+            if (n == 4) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    int nextN(int n) {
+        int x = 0;
+        while (n != 0) {
+            x += Math.pow(n % 10,  2);
+            n /= 10;
+        }
+        return x;
     }
 
 
