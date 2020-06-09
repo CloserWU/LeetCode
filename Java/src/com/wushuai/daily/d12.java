@@ -323,6 +323,117 @@ public class d12 {
         }
     }
 
+    /**
+     * https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/solution/c-jing-dian-di-gui-si-lu-fei-chang-hao-li-jie-shi-/
+     *
+     * @param root
+     * @param p
+     * @param q
+     * @return
+     */
+    public TreeNode lowestCommonAncestorV2(TreeNode root, TreeNode p, TreeNode q) {
+        if (root == null) {
+            return null;
+        }
+        // 如果找到了，那就返回这个节点
+        if (root == p || root == q) {
+            return root;
+        }
+        // 若是当前节点不是，那么查看左子树是否有p或q
+        TreeNode left = lowestCommonAncestorV2(root.left, p, q);
+        TreeNode right = lowestCommonAncestorV2(root.right, p, q);
+        // 左子树没找到，那肯定在右子树，返回右子树
+        // 可以保证right是最近的祖先，因为right是第一匹配到p或q的节点，
+        if (left == null) {
+            return right;
+        }
+        if (right == null) {
+            return left;
+        }
+        // 左右子树都找到，那么当前节点就是最近祖先
+        return root;
+    }
+
+
+    /**
+     * 560. 和为K的子数组
+     * pre是[0-i]的数组累加和
+     * map<K, V> : 连续子数组和为K出现的次数V
+     * prei - prej = k
+     * 对于每一个pre，找到和为pre-k的个数V，累加到count上
+     * 并更新pre的默认值加1
+     *
+     * @param nums
+     * @param k
+     * @return
+     */
+    public int subarraySum(int[] nums, int k) {
+        int pre = 0;
+        int count = 0;
+        Map<Integer, Integer> map = new HashMap<>();
+        map.put(0, 1);
+        for (int i = 0; i < nums.length; i++) {
+            pre += nums[i];
+            if (map.containsKey(pre - k)) {
+                count += map.get(pre - k);
+            }
+            map.put(pre, map.getOrDefault(pre, 0) + 1);
+        }
+        return count;
+    }
+
+    /**
+     * 19. 删除链表的倒数第N个节点
+     *
+     * @param head
+     * @param n
+     * @return
+     */
+    public ListNode removeNthFromEnd(ListNode head, int n) {
+        ListNode tmp = new ListNode(-1);
+        tmp.next = head;
+        ListNode root = tmp;
+        for (int i = 0; i < n; i++) {
+            head = head.next;
+        }
+        while (head != null) {
+            head = head.next;
+            root = root.next;
+        }
+        root.next = root.next.next;
+        return tmp.next;
+    }
+
+
+    /**
+     * 974. 和可被 K 整除的子数组
+     * map<K, V> K是pre % K的值，V是这个值出现的次数
+     * （prei - prej） % K == 0  即 prei % K == prej % K
+     * if(prei % K == prej % K) count += map[prei % K]
+     * 那么对么一个pre都将map[pre]置位1，或原来的+1
+     * 那么对每一个pre，count可以直接累加map[pre % K]
+     *
+     * @param A
+     * @param K
+     * @return
+     */
+    public int subarraysDivByK(int[] A, int K) {
+        Map<Integer, Integer> map = new HashMap<>();
+        int pre = 0, count = 0;
+        map.put(0, 1);
+        for (int i = 0; i < A.length; i++) {
+            pre += A[i];
+            // 注意 Java 取模的特殊性，当被除数为负数时取模结果为负数，需要纠正
+            int mod = (pre % K + K) % K;
+            if (map.containsKey(mod % K)) {
+                count += map.get(mod % K);
+            }
+            map.put(mod % K, map.getOrDefault(mod % K, 0) + 1);
+        }
+        return count;
+    }
+
+
     @Test
     public void test() {
         d12 o = new d12();
