@@ -265,6 +265,7 @@ public class d11 {
 
     /**
      * 69. x 的平方根
+     *
      * @param x
      * @return
      */
@@ -272,10 +273,272 @@ public class d11 {
         return (int) Math.sqrt(x);
     }
 
+    /**
+     * 152. 乘积最大子数组
+     * https://leetcode-cn.com/problems/maximum-product-subarray/solution/cheng-ji-zui-da-zi-shu-zu-by-leetcode-solution/
+     *
+     * @param nums
+     * @return
+     */
+    public int maxProduct(int[] nums) {
+        int ans = Integer.MIN_VALUE;
+        int[][] dp = new int[nums.length][2];
+        dp[0][1] = nums[0];
+        dp[0][0] = nums[0];
+        for (int i = 1; i < nums.length; i++) {
+            int a = dp[i - 1][0] * nums[i];
+            int b = dp[i - 1][1] * nums[i];
+            dp[i][0] = Integer.max(Integer.max(a, b), nums[i]);
+            dp[i][1] = Integer.min(Integer.min(a, b), nums[i]);
+            ans = Integer.max(ans, Integer.max(Integer.max(dp[i][0], dp[i][1]), nums[i]));
+        }
+        return ans;
+    }
+
+    /**
+     * 221. 最大正方形
+     *
+     * @param matrix
+     * @return
+     */
+    public int maximalSquare(char[][] matrix) {
+        if (matrix.length == 0 || matrix[0].length == 0) {
+            return 0;
+        }
+        int ans = matrix[0][0] - '0';
+        int[][] dp = new int[matrix.length][matrix[0].length];
+        for (int i = 0; i < matrix.length; i++) {
+            dp[i][0] = matrix[i][0] - '0';
+            ans = Integer.max(ans, dp[i][0]);
+        }
+        for (int i = 0; i < matrix[0].length; i++) {
+            dp[0][i] = matrix[0][i] - '0';
+            ans = Integer.max(ans, dp[0][i]);
+        }
+        for (int i = 1; i < matrix.length; i++) {
+            for (int j = 1; j < matrix[0].length; j++) {
+                if (matrix[i][j] == '1') {
+                    dp[i][j] = Integer.min(dp[i - 1][j], Integer.min(dp[i - 1][j - 1], dp[i][j - 1])) + 1;
+                } else {
+                    dp[i][j] = 0;
+                }
+                ans = Integer.max(ans, dp[i][j]);
+            }
+        }
+        return ans * ans;
+    }
+
+    /**
+     * 287. 寻找重复数
+     * https://leetcode-cn.com/problems/find-the-duplicate-number/solution/er-fen-fa-si-lu-ji-dai-ma-python-by-liweiwei1419/
+     *
+     * @param nums
+     * @return
+     */
+    public int findDuplicate(int[] nums) {
+        int left = 0, right = nums.length;
+        int cnt = 0;
+        while (left < right) {
+            cnt = 0;
+            int mid = (left + right) >>> 1;
+            for (int num : nums) {
+                if (num <= mid) {
+                    cnt++;
+                }
+            }
+            if (cnt > mid) {
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+        return left;
+    }
+
+
+    /**
+     * 394. 字符串解码
+     *
+     * @param s
+     * @return
+     */
+    public String decodeString(String s) {
+        char[] chars = s.toCharArray();
+        StringBuilder sb = new StringBuilder();
+        while (s.indexOf('[') != -1) {
+            sb = new StringBuilder();
+            int begin = s.lastIndexOf('[');
+            int end = s.indexOf(']', begin);
+            int i = begin - 1;
+            int num = 0;
+            while (i >= 0 && chars[i] <= '9' && chars[i] >= '0') {
+                i--;
+            }
+            for (int j = i + 1; j < begin; j++) {
+                num = num * 10 + chars[j] - '0';
+            }
+            String tmp = s.substring(begin + 1, end);
+            for (int j = 0; j < num; j++) {
+                sb.append(tmp);
+            }
+            s = s.substring(0, i + 1) + sb.toString() + s.substring(end + 1);
+        }
+        return s;
+    }
+
+
+    /**
+     * 155. 最小栈
+     */
+    class MinStack {
+        Stack<Integer> stack = new Stack<>();
+        Stack<Integer> min = new Stack<>();
+
+        /**
+         * initialize your data structure here.
+         */
+        public MinStack() {
+
+        }
+
+        public void push(int x) {
+            stack.push(x);
+            if (min.size() == 0 || min.peek() >= x) {
+                min.push(x);
+            }
+        }
+
+        public void pop() {
+            Integer pop = stack.pop();
+            if (pop.equals(min.peek())) {
+                min.pop();
+            }
+        }
+
+        public int top() {
+            return stack.peek();
+        }
+
+        public int getMin() {
+            return min.peek();
+        }
+    }
+
+    /**
+     * 198. 打家劫舍
+     *
+     * @param nums
+     * @return
+     */
+    public int rob(int[] nums) {
+        if (nums.length == 1) {
+            return nums[0];
+        }
+        int[] dp = new int[nums.length];
+        dp[0] = nums[0];
+        dp[1] = Integer.max(nums[0], nums[1]);
+        for (int i = 2; i < nums.length; i++) {
+            dp[i] = Integer.max(dp[i - 1], dp[i - 2] + nums[i]);
+        }
+        return dp[dp.length - 1];
+    }
+
+    /**
+     * 572. 另一个树的子树
+     *
+     * @param s
+     * @param t
+     * @return
+     */
+    public boolean isSubtree(TreeNode s, TreeNode t) {
+        if (s != null) {
+            boolean f = isSame(s, t);
+            if (f) {
+                return true;
+            }
+            boolean f1 = isSubtree(s.left, t);
+            if (f1) {
+                return f1;
+            }
+            boolean f2 = isSubtree(s.right, t);
+            if (f2) {
+                return f2;
+            }
+            return false;
+        }
+        return t == null;
+    }
+
+    boolean isSame(TreeNode s, TreeNode t) {
+        if (s != null && t != null) {
+            if (s.val == t.val) {
+                return isSame(s.left, t.left) && isSame(s.right, t.right);
+            } else {
+                return false;
+            }
+        } else {
+            return s == null && t == null;
+        }
+    }
+
+    /**
+     * 680. 验证回文字符串 Ⅱ
+     *
+     * @param s
+     * @return
+     */
+    public boolean validPalindrome(String s) {
+        int left = 0, right = s.length() - 1;
+        char[] chars = s.toCharArray();
+        while (left < right) {
+            if (chars[left] == chars[right]) {
+                left++;
+                right--;
+            } else {
+                boolean f1 = true, f2 = true;
+                int bakLeft = left;
+                int bakRight = right;
+                left++;
+                while (left < right) {
+                    if (chars[left] == chars[right]) {
+                        left++;
+                        right--;
+                    } else {
+                        f1 = false;
+                        break;
+                    }
+                }
+                left = bakLeft;
+                right = bakRight;
+                right--;
+                while (left < right) {
+                    if (chars[left] == chars[right]) {
+                        left++;
+                        right--;
+                    } else {
+                        f2 = false;
+                        break;
+                    }
+                }
+                return f1 || f2;
+            }
+        }
+        return true;
+    }
+
+
     @Test
     public void test() {
         d11 o = new d11();
         System.out.println(o.jump_v2(new int[]{2, 3, 1, 1, 4}));
+        System.out.println(o.maxProduct(new int[]{-9, 0, 2, 4, -1, 2, 9, 4, -2, 5, -6, 5, 4, 7, -1, 1, 0, 5, -4}));
+
+        System.out.println(o.validPalindrome("fdjksfgakjsdhfjlkbk"));
+
+        System.out.println(o.decodeString("3[a]2[bc]"));
+        System.out.println(o.decodeString("3[a2[c]]"));
+        System.out.println(o.decodeString("2[abc]3[cd]ef"));
+        System.out.println(o.decodeString("abc3[cd]xyz"));
 
         System.out.println(o.largestRectangleArea(new int[]{6, 7, 5, 2, 4, 5, 9, 3}));
         System.out.println(o.largestRectangleArea(new int[]{1, 1}));
