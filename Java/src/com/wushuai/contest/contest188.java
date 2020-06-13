@@ -121,6 +121,8 @@ public class contest188 {
 
     /**
      * 1443. 收集树上所有苹果的最少时间
+     * <p>
+     * wrong
      *
      * @param n
      * @param edges
@@ -147,6 +149,7 @@ public class contest188 {
     }
 
     /**
+     * wrong
      *
      * @param n
      * @param edges
@@ -163,6 +166,58 @@ public class contest188 {
         for (int[] edge : edges) {
             if (hasApple.get(edge[0]) && hasApple.get(edge[1])) {
                 res += 2;
+            }
+        }
+        return res;
+    }
+
+    /**
+     * 并查集
+     *
+     * @param n
+     * @param edges
+     * @param hasApple
+     * @return
+     */
+    public int minTimeV3(int n, int[][] edges, List<Boolean> hasApple) {
+        int[] parent = new int[n];
+        boolean[] visit = new boolean[n];
+        parent[0] = 0;
+        visit[0] = true;
+        int num = 1;
+        // 建立并查集
+        // 考虑到，edges中的边不一定是从上到下，所以要一直循环，直到所有节点都访问过一遍，即为建立并查集完毕
+        // 从0节点开始，自顶向下建立
+        while (num < n) {
+            for (int[] edge : edges) {
+                int left = edge[0];
+                int right = edge[1];
+                if (visit[left]) {
+                    // [父，子]
+                    parent[right] = left;
+                    visit[right] = true;
+                    num++;
+                } else if (visit[right]) {
+                    // [子，父]
+                    parent[left] = right;
+                    visit[left] = true;
+                    num++;
+                }
+            }
+        }
+        Arrays.fill(visit, false);
+        // 从有苹果的节点往上遍历，直到遍历到被访问过的节点为止，每次结果加2
+        // 0节点访问置位true，所有路径到此终结
+        visit[0] = true;
+        int res = 0;
+        for (int i = 0; i < n; i++) {
+            if (hasApple.get(i)) {
+                int j = i;
+                while (!visit[j]) {
+                    visit[j] = true;
+                    j = parent[j];
+                    res += 2;
+                }
             }
         }
         return res;
