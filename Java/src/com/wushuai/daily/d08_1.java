@@ -27,6 +27,7 @@ public class d08_1 {
     /**
      * 记录窗口范围内，每种元素出现了几次，
      * 全部大于0为满足条件窗口，有一个小于等于0，为不满足窗口
+     *
      * @param map
      * @return
      */
@@ -162,7 +163,7 @@ public class d08_1 {
         Arrays.fill(a, '0');
         if (n1.length() < n2.length()) {
             n1.append(a);
-        } else if (n1.length() > n2.length()){
+        } else if (n1.length() > n2.length()) {
             n2.append(a);
         }
         char[] chars1 = n1.toString().toCharArray();
@@ -181,6 +182,52 @@ public class d08_1 {
             sb.append(1);
         }
         return sb.reverse().toString();
+    }
+
+
+    /**
+     * 8.04 207. 课程表
+     *
+     * @param numCourses
+     * @param prerequisites
+     * @return
+     */
+    public boolean canFinish(int numCourses, int[][] prerequisites) {
+        List<List<Integer>> graph = new ArrayList<>(Collections.nCopies(numCourses, null));
+        int[] inDegree = new int[numCourses];
+        for (int[] edge: prerequisites) {
+            int from = edge[1];
+            int to = edge[0];
+            List<Integer> edges = graph.get(from);
+            if (edges == null) {
+                edges = new ArrayList<>();
+            }
+            edges.add(to);
+            inDegree[to]++;
+            graph.set(from, edges);
+        }
+        int num = 0;
+        Queue<Integer> queue = new LinkedList<>();
+        for (int i = 0; i < inDegree.length; i++) {
+            if (inDegree[i] == 0) {
+                queue.add(i);
+            }
+        }
+        while (!queue.isEmpty()) {
+            num++;
+            Integer poll = queue.poll();
+            List<Integer> edges = graph.get(poll);
+            if (edges == null) {
+                continue;
+            }
+            for (Integer to: edges) {
+                inDegree[to]--;
+                if (inDegree[to] == 0) {
+                    queue.add(to);
+                }
+            }
+        }
+        return num == numCourses;
     }
 
     @Test
