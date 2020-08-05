@@ -2,6 +2,8 @@ package com.wushuai.daily;
 
 import org.junit.Test;
 
+import java.util.Stack;
+
 /**
  * <p>d07_1</p>
  * <p>description</p>
@@ -112,6 +114,49 @@ public class d07_1 {
         root.left = helper(nums, left, mid - 1);
         return root;
     }
+
+    /**
+     * 7.04 32. 最长有效括号
+     * 对于遇到的每个 ‘(’ ，我们将它的下标放入栈中
+     * 对于遇到的每个 ‘)’ ，我们先弹出栈顶元素表示匹配了当前右括号：
+     * 如果栈为空，说明当前的右括号为没有被匹配的右括号，我们将其下标放入栈中来更新我们之前提到的「最后一个没有被匹配的右括号的下标」
+     * 如果栈不为空，当前右括号的下标减去栈顶元素即为「以该右括号为结尾的最长有效括号的长度」
+     *
+     * @param s
+     * @return
+     */
+    public int longestValidParentheses(String s) {
+        char[] chars = s.toCharArray();
+        Stack<Integer> stack = new Stack<>();
+        stack.push(-1);
+        int res = 0;
+        for (int i = 0; i < chars.length; i++) {
+            if (chars[i] == '(') {
+                stack.push(i);
+            } else {
+                stack.pop();
+                if (stack.empty()) {
+                    // 记录断开子括号串的右括号边界
+                    stack.push(i);
+                } else {
+                    res = Integer.max(res, i - stack.peek());
+                }
+            }
+        }
+        return res;
+    }
+
+    /**
+     * 7.05 44. 通配符匹配
+     * @param s
+     * @param p
+     * @return
+     */
+    public boolean isMatch(String s, String p) {
+        // too hard to be finished
+        return false;
+    }
+
 
     @Test
     public void test() {

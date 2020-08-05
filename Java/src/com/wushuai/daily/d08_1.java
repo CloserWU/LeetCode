@@ -195,7 +195,7 @@ public class d08_1 {
     public boolean canFinish(int numCourses, int[][] prerequisites) {
         List<List<Integer>> graph = new ArrayList<>(Collections.nCopies(numCourses, null));
         int[] inDegree = new int[numCourses];
-        for (int[] edge: prerequisites) {
+        for (int[] edge : prerequisites) {
             int from = edge[1];
             int to = edge[0];
             List<Integer> edges = graph.get(from);
@@ -220,7 +220,7 @@ public class d08_1 {
             if (edges == null) {
                 continue;
             }
-            for (Integer to: edges) {
+            for (Integer to : edges) {
                 inDegree[to]--;
                 if (inDegree[to] == 0) {
                     queue.add(to);
@@ -229,6 +229,37 @@ public class d08_1 {
         }
         return num == numCourses;
     }
+
+    /**
+     * 8.05 337. 打家劫舍 III
+     *
+     * @param root
+     * @return
+     */
+    public int rob(TreeNode root) {
+        int[] res = robInternal(root);
+        return Integer.max(res[0], res[1]);
+    }
+
+    /**
+     * res[0]代表选择当前节点情况下，其节点为根的子树，最大值是多少
+     * res[1]代表不选择当前节点情况下，其节点为根的子树，最大值是多少
+     *
+     * @param root
+     * @return
+     */
+    int[] robInternal(TreeNode root) {
+        if (root == null) {
+            return new int[2];
+        }
+        int[] left = robInternal(root.left);
+        int[] right = robInternal(root.right);
+        int[] res = new int[2];
+        res[0] = root.val + left[1] + right[1];
+        res[1] = Integer.max(left[0], left[1]) + Integer.max(right[0], right[1]);
+        return res;
+    }
+
 
     @Test
     public void test() {
