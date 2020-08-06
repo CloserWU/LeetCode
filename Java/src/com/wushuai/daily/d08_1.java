@@ -261,6 +261,91 @@ public class d08_1 {
     }
 
 
+    /**
+     * ==线段树==
+     * https://leetcode-cn.com/problems/palindrome-pairs/solution/hui-wen-dui-by-leetcode-solution/
+     */
+    class Trie {
+        int[] ch = new int[26];
+
+        int flag;
+
+        public Trie() {
+            flag = -1;
+        }
+    }
+
+    List<Trie> trieTree = new ArrayList<>();
+
+    public void insertTrie(String s, int id) {
+        int len = s.length(), add = 0;
+        for (int i = 0; i < len; i++) {
+            int x = s.charAt(i) - 'a';
+            if (trieTree.get(add).ch[x] == 0) {
+                trieTree.add(new Trie());
+                trieTree.get(add).ch[x] = trieTree.size() - 1;
+            }
+            add = trieTree.get(add).ch[x];
+        }
+        trieTree.get(add).flag = id;
+    }
+
+    public int findWordTrie(String s, int left, int right) {
+        int add = 0;
+        for (int i = right; i >= left; i--) {
+            int x = s.charAt(i) - 'a';
+            add = trieTree.get(add).ch[x];
+            if (add == 0) {
+                return -1;
+            }
+        }
+        return trieTree.get(add).flag;
+    }
+
+    public boolean isPalindrome(String s, int left, int right) {
+        int len = right - left + 1;
+        for (int i = 0; i < len / 2; i++) {
+            if (s.charAt(left + i) != s.charAt(right - i)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 8.06 336. 回文对
+     * 重点：线段树 ->https://leetcode-cn.com/problems/palindrome-pairs/solution/hui-wen-dui-by-leetcode-solution/
+     *
+     * @param words
+     * @return
+     */
+    public List<List<Integer>> palindromePairs(String[] words) {
+        trieTree.add(new Trie());
+        int n = words.length;
+        for (int i = 0; i < n; i++) {
+            insertTrie(words[i], i);
+        }
+        List<List<Integer>> res = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            int m = words[i].length();
+            for (int j = 0; j <= m; j++) {
+                if (isPalindrome(words[i], j, m - 1)) {
+                    int findLeft = findWordTrie(words[i], 0, j - 1);
+                    if (findLeft != -1 && findLeft != i) {
+                        res.add(Arrays.asList(i, findLeft));
+                    }
+                }
+                if (j != 0 && isPalindrome(words[i], 0, j - 1)) {
+                    int findRight = findWordTrie(words[i], j, m - 1);
+                    if (findRight != -1 && findRight != i) {
+                        res.add(Arrays.asList(findRight, i));
+                    }
+                }
+            }
+        }
+        return res;
+    }
+
     @Test
     public void test() {
         d08_1 o = new d08_1();
