@@ -2,7 +2,7 @@ package com.wushuai.daily;
 
 import org.junit.Test;
 
-import java.util.Stack;
+import java.util.*;
 
 /**
  * <p>d07_1</p>
@@ -192,6 +192,109 @@ public class d07_1 {
             }
         }
         return dp[row - 1][col - 1];
+    }
+
+
+    /**
+     * 7.07 112. 路径总和
+     *
+     * @param root
+     * @param sum
+     * @return
+     */
+    public boolean hasPathSum(TreeNode root, int sum) {
+        if (root == null) {
+            return false;
+        }
+        if (root.left == null && root.right == null) {
+            return sum - root.val == 0;
+        }
+        return hasPathSum(root.left, sum - root.val) || hasPathSum(root.right, sum - root.val);
+    }
+
+
+    /**
+     * 7.08 面试题 16.11. 跳水板
+     *
+     * @param shorter
+     * @param longer
+     * @param k
+     * @return
+     */
+    public int[] divingBoard(int shorter, int longer, int k) {
+        if (k == 0) {
+            return new int[0];
+        }
+        Set<Integer> set = new HashSet<>();
+        for (int i = 0; i <= k; i++) {
+            set.add(shorter * i + (k - i) * longer);
+        }
+        int[] res = new int[set.size()];
+        Iterator<Integer> iterator = set.iterator();
+        int i = 0;
+        while (iterator.hasNext()) {
+            res[i++] = iterator.next();
+        }
+        Arrays.sort(res);
+        return res;
+    }
+
+
+    class Trie {
+        int[] ch = new int[26];
+        int flag;
+
+        public Trie() {
+            flag = -1;
+        }
+    }
+
+    void insertTrie(String str, int id) {
+        char[] chars = str.toCharArray();
+        int add = 0;
+        for (char aChar : chars) {
+            int x = aChar - 'a';
+            if (trie.get(add).ch[x] == 0) {
+                trie.add(new Trie());
+                trie.get(add).ch[x] = trie.size() - 1;
+            }
+            add = trie.get(add).ch[x];
+        }
+        trie.get(add).flag = id;
+    }
+
+    int findWord(String str, int left, int right) {
+        char[] chars = str.toCharArray();
+        int add = 0;
+        for (int i = left; i <= right; i++) {
+            int x = chars[i] - 'a';
+            add = trie.get(add).ch[x];
+            if (add == 0) {
+                return -1;
+            }
+        }
+        return trie.get(add).flag;
+    }
+
+    List<Trie> trie = new ArrayList<>();
+
+
+    /**
+     * 7.09面试题 17.13. 恢复空格
+     *
+     * @param dictionary
+     * @param sentence
+     * @return
+     */
+    public int reSpace(String[] dictionary, String sentence) {
+        trie.add(new Trie());
+        int res = 0;
+        for (int i = 0; i < dictionary.length; i++) {
+            insertTrie(dictionary[i], i);
+        }
+
+
+        return res;
     }
 
 

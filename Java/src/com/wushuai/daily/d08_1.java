@@ -346,6 +346,27 @@ public class d08_1 {
         return res;
     }
 
+
+    /**
+     * 8.07 100. 相同的树
+     *
+     * @param p
+     * @param q
+     * @return
+     */
+    public boolean isSameTree(TreeNode p, TreeNode q) {
+        if (p != null && q != null) {
+            if (p.val == q.val) {
+                boolean left = isSameTree(p.left, q.left);
+                if (!left) {
+                    return false;
+                }
+                return isSameTree(p.right, q.right);
+            }
+        }
+        return p == null && q == null;
+    }
+
     @Test
     public void test() {
         d08_1 o = new d08_1();
