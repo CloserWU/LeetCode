@@ -240,61 +240,74 @@ public class d07_1 {
     }
 
 
+    /**
+     * 字典树， 指针版本 （d08_1 数组简化版本）
+     */
     class Trie {
-        int[] ch = new int[26];
-        int flag;
+        Trie[] next;
+        boolean isEnd;
 
         public Trie() {
-            flag = -1;
+            isEnd = false;
+            next = new Trie[26];
         }
-    }
 
-    void insertTrie(String str, int id) {
-        char[] chars = str.toCharArray();
-        int add = 0;
-        for (char aChar : chars) {
-            int x = aChar - 'a';
-            if (trie.get(add).ch[x] == 0) {
-                trie.add(new Trie());
-                trie.get(add).ch[x] = trie.size() - 1;
+        public void insert(String s) {
+            Trie cur = this;
+            for (int i = s.length() - 1; i >= 0; i--) {
+                int x = s.charAt(i) - 'a';
+                if (cur.next[x] == null) {
+                    cur.next[x] = new Trie();
+                }
+                cur = cur.next[x];
             }
-            add = trie.get(add).ch[x];
+            cur.isEnd = true;
         }
-        trie.get(add).flag = id;
     }
-
-    int findWord(String str, int left, int right) {
-        char[] chars = str.toCharArray();
-        int add = 0;
-        for (int i = left; i <= right; i++) {
-            int x = chars[i] - 'a';
-            add = trie.get(add).ch[x];
-            if (add == 0) {
-                return -1;
-            }
-        }
-        return trie.get(add).flag;
-    }
-
-    List<Trie> trie = new ArrayList<>();
 
 
     /**
-     * 7.09面试题 17.13. 恢复空格
+     * 7.09面试题 17.13. 恢复空格   == > reSpace.gif
+     * 字典树 dp   （综合题， 重点掌握）
+     * https://leetcode-cn.com/problems/re-space-lcci/solution/hui-fu-kong-ge-by-leetcode-solution/
+     * 定义 dp[i] 表示考虑前 i 个字符最少的未识别的字符数量，从前往后计算 dp 值。
+     * 考虑转移方程，每次转移的时候我们考虑第 j(j≤i) 个到第 i 个字符组成的子串 sentence[j−1⋯i−1]
+     * （注意字符串下标从 0 开始）是否能在词典中找到，如果能找到的话按照定义转移方程即为
+     * dp[i]=min(dp[i],dp[j−1])
+     * <p>
+     * 否则没有找到的话我们可以复用 dp[i−1] 的状态再加上当前未被识别的第 i 个字符，因此此时 dp 值为
+     * dp[i]=dp[i−1]+1
      *
      * @param dictionary
      * @param sentence
      * @return
      */
     public int reSpace(String[] dictionary, String sentence) {
-        trie.add(new Trie());
-        int res = 0;
-        for (int i = 0; i < dictionary.length; i++) {
-            insertTrie(dictionary[i], i);
+        int len = sentence.length();
+        Trie trie = new Trie();
+        int[] dp = new int[len + 1];
+        Arrays.fill(dp, Integer.MAX_VALUE);
+        dp[0] = 0;
+        for (String s : dictionary) {
+            trie.insert(s);
         }
-
-
-        return res;
+        for (int i = 1; i <= len; i++) {
+            dp[i] = dp[i - 1] + 1;
+            Trie cur = trie;
+            for (int j = i; j >= 1; j--) {
+                int x = sentence.charAt(j - 1) - 'a';
+                if (cur.next[x] == null) {
+                    break;
+                } else if (cur.next[x].isEnd) {
+                    dp[i] = Integer.min(dp[i], dp[j - 1]);
+                }
+                if (dp[i] == 0) {
+                    break;
+                }
+                cur = cur.next[x];
+            }
+        }
+        return dp[len];
     }
 
 

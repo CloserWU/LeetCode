@@ -174,8 +174,10 @@ public class d06_1 {
     }
 
 
+
     /**
      * 6.07 126. 单词接龙 II
+     * 暴力回溯，TTL
      *
      * @param beginWord
      * @param endWord
@@ -183,31 +185,63 @@ public class d06_1 {
      * @return
      */
     public List<List<String>> findLadders(String beginWord, String endWord, List<String> wordList) {
-        return null;
-    }
-
-
-    int findRoot(int x, int[] graph) {
-        while (x != graph[x]) {
-            x = graph[x];
+        List<List<String>> res = new ArrayList<>();
+        List<String> res1 = new ArrayList<>();
+        res1.add(beginWord);
+        boolean[] visit = new boolean[wordList.size()];
+        for (int i = 0; i < wordList.size(); i++) {
+            if (isLadder(beginWord, wordList.get(i))) {
+                res1.add(wordList.get(i));
+                visit[i] = true;
+                dfs(res, wordList.get(i), endWord, wordList, res1, visit);
+                visit[i] = false;
+                res1.remove(res1.size() - 1);
+            }
         }
-        return x;
+
+        int minLen = Integer.MAX_VALUE;
+        for (List<String> list: res) {
+            minLen = Integer.min(minLen, list.size());
+        }
+        List<List<String>> res0 = new ArrayList<>();
+        for (List<String> list: res) {
+            if (list.size() == minLen) {
+                res0.add(list);
+            }
+        }
+        return res0;
     }
 
-    void union(int x, int y, int[] graph, int[] height) {
-        x = findRoot(x, graph);
-        y = findRoot(y, graph);
-        if (x != y) {
-            if (height[x] > height[y]) {
-                graph[y] = x;
-            } else if (height[x] < height[y]) {
-                graph[x] = y;
-            } else {
-                graph[x] = y;
-                height[y]++;
+    void dfs(List<List<String>> res, String beginWord, String endWord, List<String> wordList, List<String> res1, boolean[] visit) {
+        if (beginWord.equals(endWord)) {
+            List<String> tmp = new ArrayList<>(res1);
+            res.add(tmp);
+        }
+        for (int i = 0; i < wordList.size(); i++) {
+            if (!visit[i] && isLadder(beginWord, wordList.get(i))) {
+                res1.add(wordList.get(i));
+                visit[i] = true;
+                dfs(res, wordList.get(i), endWord, wordList, res1, visit);
+                visit[i] = false;
+                res1.remove(res1.size() - 1);
             }
         }
     }
+
+    boolean isLadder(String a, String b) {
+        int n = 0;
+        for (int i = 0; i < a.length(); i++) {
+            if (a.charAt(i) != b.charAt(i)) {
+                n++;
+            }
+            if (n > 1) {
+                return false;
+            }
+        }
+        return n == 1;
+    }
+
+
 
     /**
      * 6.08 990. 等式方程的可满足性
@@ -241,8 +275,44 @@ public class d06_1 {
                 }
             }
         }
-
         return true;
+    }
+
+
+    int findRoot(int x, int[] graph) {
+        while (x != graph[x]) {
+            x = graph[x];
+        }
+        return x;
+    }
+
+    void union(int x, int y, int[] graph, int[] height) {
+        x = findRoot(x, graph);
+        y = findRoot(y, graph);
+        if (x != y) {
+            if (height[x] > height[y]) {
+                graph[y] = x;
+            } else if (height[x] < height[y]) {
+                graph[x] = y;
+            } else {
+                graph[x] = y;
+                height[y]++;
+            }
+        }
+    }
+
+
+
+    /**
+     * 6.09 剑指 Offer 46. 把数字翻译成字符串
+     *
+     * @param num
+     * @return
+     */
+    public int translateNum(int num) {
+        char[] chars = String.valueOf(num).toCharArray();
+        dfs(chars, 0);
+        return translateNumRes;
     }
 
 
@@ -262,20 +332,11 @@ public class d06_1 {
         }
     }
 
-    /**
-     * 6.09 剑指 Offer 46. 把数字翻译成字符串
-     *
-     * @param num
-     * @return
-     */
-    public int translateNum(int num) {
-        char[] chars = String.valueOf(num).toCharArray();
-        dfs(chars, 0);
-        return translateNumRes;
-    }
-
     @Test
     public void test() {
+        System.out.println(findLadders("hit", "cog", Arrays.asList("hot","dot","dog","lot","log","cog")));
+        System.out.println(findLadders("hit", "cog", Arrays.asList("hot","dot","dog","lot","log")));
+
         d06_1 o = new d06_1();
         System.out.println(equationsPossible(new String[]{"e==d", "e==a", "f!=d", "b!=c", "a==b"}));
 

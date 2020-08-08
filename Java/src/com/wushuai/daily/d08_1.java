@@ -262,7 +262,7 @@ public class d08_1 {
 
 
     /**
-     * ==线段树==
+     * ==字典树==
      * https://leetcode-cn.com/problems/palindrome-pairs/solution/hui-wen-dui-by-leetcode-solution/
      */
     class Trie {
@@ -314,7 +314,7 @@ public class d08_1 {
 
     /**
      * 8.06 336. 回文对
-     * 重点：线段树 ->https://leetcode-cn.com/problems/palindrome-pairs/solution/hui-wen-dui-by-leetcode-solution/
+     * 重点：字典树 ->https://leetcode-cn.com/problems/palindrome-pairs/solution/hui-wen-dui-by-leetcode-solution/
      *
      * @param words
      * @return
@@ -366,6 +366,39 @@ public class d08_1 {
         }
         return p == null && q == null;
     }
+
+
+    /**
+     * 8.08 99. 恢复二叉搜索树
+     *
+     * @param root
+     */
+    public void recoverTree(TreeNode root) {
+        Stack<TreeNode> stack = new Stack<>();
+        TreeNode x = null, y = null, pre = null;
+        while (!stack.isEmpty() || root != null) {
+            while (root != null) {
+                stack.push(root);
+                root = root.left;
+            }
+            root = stack.pop();
+            if (pre != null && root.val < pre.val) {
+                y = root;
+                if (x == null) {
+                    x = pre;
+                } else {
+                    break;
+                }
+            }
+
+            pre = root;
+            root = root.right;
+        }
+        int tmp = x.val;
+        x.val = y.val;
+        y.val = tmp;
+    }
+
 
     @Test
     public void test() {
