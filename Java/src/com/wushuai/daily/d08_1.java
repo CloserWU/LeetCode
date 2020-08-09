@@ -400,9 +400,59 @@ public class d08_1 {
     }
 
 
+    /**
+     * 8.09 93. 复原IP地址
+     *
+     * @param s
+     * @return
+     */
+    public List<String> restoreIpAddresses(String s) {
+        List<String> res = new ArrayList<>();
+        if (s.length() > 12) {
+            return res;
+        }
+        for (int i = 1; i <= 3 && i < s.length() - 2; i++) {
+            for (int j = i + 1; j <= i + 3 && j < s.length() - 1; j++) {
+                for (int k = j + 1; k <= j + 3 && k < s.length(); k++) {
+                    if (isValidIp(s, i, j, k)) {
+                        StringBuilder sb = new StringBuilder();
+                        sb.append(s, 0, i);
+                        sb.append('.');
+                        sb.append(s, i, j);
+                        sb.append('.');
+                        sb.append(s, j, k);
+                        sb.append('.');
+                        sb.append(s, k, s.length());
+                        res.add(sb.toString());
+                    }
+                }
+            }
+        }
+        return res;
+    }
+
+    boolean isValidIp(String s, int i, int j, int k) {
+        String[] strs = new String[4];
+        strs[0] = s.substring(0, i);
+        strs[1] = s.substring(i, j);
+        strs[2] = s.substring(j, k);
+        strs[3] = s.substring(k);
+        for (String str: strs) {
+            if (str.length() > 1 && str.charAt(0) == '0') {
+                return false;
+            }
+            int t = Integer.parseInt(str);
+            if (t > 255 || t < 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
     @Test
     public void test() {
         d08_1 o = new d08_1();
-
+        System.out.println(restoreIpAddresses("121015123"));
     }
 }

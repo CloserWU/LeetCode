@@ -267,7 +267,7 @@ public class d07_1 {
 
 
     /**
-     * 7.09面试题 17.13. 恢复空格   == > reSpace.gif
+     * 7.09 面试题 17.13. 恢复空格   == > reSpace.gif
      * 字典树 dp   （综合题， 重点掌握）
      * https://leetcode-cn.com/problems/re-space-lcci/solution/hui-fu-kong-ge-by-leetcode-solution/
      * 定义 dp[i] 表示考虑前 i 个字符最少的未识别的字符数量，从前往后计算 dp 值。
