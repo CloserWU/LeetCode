@@ -241,7 +241,6 @@ public class d06_1 {
     }
 
 
-
     /**
      * 6.07 126. 单词接龙 II
      * 建无向图，两个相差一的字符串为一条边
@@ -439,8 +438,27 @@ public class d06_1 {
         }
     }
 
+
+    /**
+     * 6.10 9. 回文数
+     *
+     * @param x
+     * @return
+     */
+    public boolean isPalindrome(int x) {
+        String str = String.valueOf(x);
+        for (int i = 0; i < str.length() / 2; i++) {
+            if (str.charAt(i) != str.charAt(str.length() - i - 1)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     @Test
     public void test() {
+        System.out.println(isPalindrome(-121));
+
         System.out.println(findLadders("hit", "cog", Arrays.asList("hot", "dot", "dog", "lot", "log", "cog")));
         System.out.println(findLadders("hit", "cog", Arrays.asList("hot", "dot", "dog", "lot", "log")));
 

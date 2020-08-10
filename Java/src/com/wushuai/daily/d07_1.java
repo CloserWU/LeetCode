@@ -311,6 +311,33 @@ public class d07_1 {
     }
 
 
+    /**
+     * 7.10 309. 最佳买卖股票时机含冷冻期
+     * 我们用 f[i] 表示第 i天结束之后的 累计最大收益
+     * 我们目前持有一支股票，对应的「累计最大收益」记为 f[i][0]；
+     * 我们目前不持有任何股票，并且处于冷冻期中，对应的「累计最大收益」记为 f[i][1]；
+     * 我们目前不持有任何股票，并且不处于冷冻期中，对应的「累计最大收益」记为 f[i][2]。
+     * https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/solution/zui-jia-mai-mai-gu-piao-shi-ji-han-leng-dong-qi-4/
+     *
+     * @param prices
+     * @return
+     */
+    public int maxProfit(int[] prices) {
+        if (prices.length == 0) {
+            return 0;
+        }
+        int n = prices.length;
+        int[][] dp = new int[n][3];
+        dp[0][0] = -prices[0];
+        for (int i = 1; i < n; i++) {
+            dp[i][0] = Integer.max(dp[i - 1][0], dp[i - 1][2] - prices[i]);
+            dp[i][1] = dp[i - 1][0] + prices[i];
+            dp[i][2] = Integer.max(dp[i - 1][1], dp[i - 1][2]);
+        }
+        return Integer.max(dp[n - 1][1], dp[n - 1][2]);
+    }
+
+
     @Test
     public void test() {
         d07_1 o = new d07_1();

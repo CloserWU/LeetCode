@@ -437,7 +437,7 @@ public class d08_1 {
         strs[1] = s.substring(i, j);
         strs[2] = s.substring(j, k);
         strs[3] = s.substring(k);
-        for (String str: strs) {
+        for (String str : strs) {
             if (str.length() > 1 && str.charAt(0) == '0') {
                 return false;
             }
@@ -450,9 +450,34 @@ public class d08_1 {
     }
 
 
+    /**
+     * 8.10 696. 计数二进制子串
+     *
+     * @param s
+     * @return
+     */
+    public int countBinarySubstrings(String s) {
+        int res = 0, pre = 0, h = 0;
+        int tmp = 0;
+        for (int i = 0; i < s.length();) {
+            while (i < s.length() && s.charAt(i) - '0' == tmp) {
+                h++;
+                i++;
+            }
+            tmp = 1 - tmp;
+            res += Integer.min(pre, h);
+            pre = h;
+            h = 0;
+        }
+        return res;
+    }
+
+
     @Test
     public void test() {
         d08_1 o = new d08_1();
+        System.out.println(countBinarySubstrings("00110011"));
+        System.out.println(countBinarySubstrings("10101"));
         System.out.println(restoreIpAddresses("121015123"));
     }
 }
