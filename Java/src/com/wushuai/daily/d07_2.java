@@ -53,6 +53,38 @@ public class d07_2 {
         return dp[0][0];
     }
 
+
+    /**
+     * 7.13 350. 两个数组的交集 II
+     *
+     * @param nums1
+     * @param nums2
+     * @return
+     */
+    public int[] intersect(int[] nums1, int[] nums2) {
+        Map<Integer, Integer> map1 = new HashMap<>();
+        Map<Integer, Integer> map2 = new HashMap<>();
+        for (int i : nums1) {
+            map1.put(i, map1.getOrDefault(i, 0) + 1);
+        }
+        for (int i : nums2) {
+            map2.put(i, map2.getOrDefault(i, 0) + 1);
+        }
+        int i = 0;
+        int[] res = new int[Integer.min(nums1.length, nums2.length)];
+        for (Map.Entry<Integer, Integer> e : map1.entrySet()) {
+            int key = e.getKey();
+            if (map2.containsKey(key)) {
+                int epoch = Integer.min(e.getValue(), map2.get(key));
+                for (int j = 0; j < epoch; j++) {
+                    res[i++] = key;
+                }
+            }
+        }
+        return Arrays.copyOf(res, i);
+    }
+
+
     @Test
     public void test() {
         d07_2 o = new d07_2();
