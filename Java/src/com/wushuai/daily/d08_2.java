@@ -144,9 +144,74 @@ public class d08_2 {
         return res;
     }
 
+
+    /**
+     * 8.13 43. 字符串相乘
+     *
+     * @param num1
+     * @param num2
+     * @return
+     */
+    public String multiply(String num1, String num2) {
+        int add = 0;
+        String res = "0";
+        if ("0".equals(num1) || "0".equals(num2)) {
+            return res;
+        }
+        for (int i = num1.length() - 1; i >= 0; i--) {
+            StringBuilder sb = new StringBuilder();
+            for (int j = i; j < num1.length() - 1; j++) {
+                sb.append(0);
+            }
+            for (int j = num2.length() - 1; j >= 0; j--) {
+                int k = (num1.charAt(i) - '0') * (num2.charAt(j) - '0') + add;
+                sb.append(k % 10);
+                add = k / 10;
+            }
+            while (add != 0) {
+                sb.append(add % 10);
+                add /= 10;
+            }
+            // sb逆序
+            res = addString(res, sb.toString());
+        }
+        return new StringBuilder(res).reverse().toString();
+    }
+
+    String addString(String num1, String num2) {
+        StringBuilder sb = new StringBuilder();
+        int add = 0;
+        int i = 0, j = 0;
+        for (; i < num1.length() && j < num2.length(); i++, j++) {
+            int x = (num1.charAt(i) - '0') + (num2.charAt(j) - '0') + add;
+            sb.append(x % 10);
+            add = x / 10;
+        }
+        while (i < num1.length()) {
+            int x = (num1.charAt(i++) - '0') + add;
+            sb.append(x % 10);
+            add = x / 10;
+        }
+        while (j < num2.length()) {
+            int x = (num2.charAt(j++) - '0') + add;
+            sb.append(x % 10);
+            add = x / 10;
+        }
+        while (add != 0) {
+            sb.append(add % 10);
+            add /= 10;
+        }
+        return sb.toString();
+    }
+
     @Test
     public void test() {
         d08_2 o = new d08_2();
+        System.out.println(multiply("0", "456"));
+        System.out.println(multiply("1", "456"));
+        System.out.println(multiply("1", "1"));
+        System.out.println(multiply("123", "456"));
+        System.out.println(multiply("2", "3"));
         solve(new char[][]{{'X', 'X', 'X', 'X'}, {'X', 'O', 'O', 'X'}, {'X', 'X', 'O', 'X'}, {'X', 'O', 'X', 'X'}});
     }
 }

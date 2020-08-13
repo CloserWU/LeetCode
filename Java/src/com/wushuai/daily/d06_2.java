@@ -111,6 +111,65 @@ public class d06_2 {
         return dp[n - 1];
     }
 
+
+    /**
+     * 6.14 1300. 转变数组后最接近目标值的数组和
+     * https://leetcode-cn.com/problems/sum-of-mutated-array-closest-to-target/solution/bian-shu-zu-hou-zui-jie-jin-mu-biao-zhi-de-shu-zu-/
+     *
+     * @param arr
+     * @param target
+     * @return
+     */
+    public int findBestValue(int[] arr, int target) {
+        Arrays.sort(arr);
+        int n = arr.length;
+        int[] prefix = new int[n + 1];
+        // 前缀和
+        for (int i = 1; i <= n; i++) {
+            prefix[i] = prefix[i - 1] + arr[i - 1];
+        }
+        int r = arr[n - 1];
+        int res = 0, diff = target;
+        for (int i = 0; i <= r; i++) {
+            // binarySearch没找到key的话，返回-(low + 1)
+            // 这里要得到low，也就是数组的左开端
+            int idx = binarySearch(arr, i, 0, n);
+            if (idx < 0) {
+                idx = -idx - 1;
+            }
+            int cur = prefix[idx] + (n - idx) * i;
+            if (Math.abs(cur - target) < diff) {
+                res = i;
+                diff = Math.abs(cur - target);
+            }
+        }
+        return res;
+    }
+
+    /**
+     * [low, high)  --->
+     * @param arr
+     * @param key
+     * @param low
+     * @param high
+     * @return
+     */
+    int binarySearch(int[] arr, int key, int low, int high) {
+        high--;
+        while (low <= high) {
+            int mid = low + ((high - low) >> 1);
+            if (arr[mid] > key) {
+                high = mid - 1;
+            } else if (arr[mid] < key) {
+                low = mid + 1;
+            } else {
+                return mid;
+            }
+        }
+        return -(low + 1);
+    }
+
+
     @Test
     public void test() {
         d06_2 o = new d06_2();

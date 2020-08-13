@@ -85,9 +85,47 @@ public class d07_2 {
     }
 
 
+    /**
+     * 7.14 120. 三角形最小路径和
+     *
+     * @param triangle
+     * @return
+     */
+    public int minimumTotal(List<List<Integer>> triangle) {
+        for (int i = 1; i < triangle.size(); i++) {
+            int n1 = triangle.get(i - 1).get(0);
+            int n2 = triangle.get(i - 1).get(triangle.get(i - 1).size() - 1);
+            triangle.get(i).set(0, triangle.get(i).get(0) + n1);
+            triangle.get(i).set(triangle.get(i).size() - 1, triangle.get(i).get(triangle.get(i).size() - 1) + n2);
+        }
+        for (int i = 2; i < triangle.size(); i++) {
+            for (int j = 1; j < triangle.get(i).size() - 1; j++) {
+                int up = triangle.get(i - 1).get(j);
+                int upAndLeft = triangle.get(i - 1).get(j - 1);
+                int self = triangle.get(i).get(j);
+                triangle.get(i).set(j, Integer.min(up, upAndLeft) + self);
+            }
+        }
+        List<Integer> lastRow = triangle.get(triangle.size() - 1);
+        int res = Integer.MAX_VALUE;
+        for (Integer num: lastRow) {
+            res = Integer.min(res, num);
+        }
+        return res;
+    }
+
     @Test
     public void test() {
         d07_2 o = new d07_2();
-
+        List<List<Integer>> triangle = new ArrayList<>();
+        List<Integer> l1 = Arrays.asList(2);
+        List<Integer> l2 = Arrays.asList(3,4);
+        List<Integer> l3 = Arrays.asList(6,5,7);
+        List<Integer> l4 = Arrays.asList(4,1,8,3);
+        triangle.add(l1);
+        triangle.add(l2);
+        triangle.add(l3);
+        triangle.add(l4);
+        System.out.println(minimumTotal(triangle));
     }
 }
