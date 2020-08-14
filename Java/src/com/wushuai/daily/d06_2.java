@@ -148,6 +148,7 @@ public class d06_2 {
 
     /**
      * [low, high)  --->
+     *
      * @param arr
      * @param key
      * @param low
@@ -170,9 +171,116 @@ public class d06_2 {
     }
 
 
+    /**
+     * 6.15 14. 最长公共前缀
+     *
+     * @param strs
+     * @return
+     */
+    public String longestCommonPrefix(String[] strs) {
+        if (strs == null || strs.length == 0) {
+            return "";
+        }
+        String str = strs[0];
+        for (String aList : strs) {
+            while (!aList.startsWith(str)) {
+                if (str.length() == 1) {
+                    return "";
+                }
+                str = str.substring(0, str.length() - 1);
+            }
+        }
+        return str;
+    }
+
+
+
+    /**
+     * 6.16 297. 二叉树的序列化与反序列化
+     */
+    class Codec {
+
+        // Encodes a tree to a single string.
+        public String serialize(TreeNode root) {
+            if (root == null) {
+                return "[]";
+            }
+            StringBuilder sb = new StringBuilder();
+            sb.append('[');
+            sb.append(root.val);
+            sb.append(',');
+            Queue<TreeNode> queue = new LinkedList<>();
+            queue.add(root);
+            while (!queue.isEmpty()) {
+                TreeNode head = queue.poll();
+                if (head.left == null) {
+                    sb.append("null,");
+                } else {
+                    sb.append(head.left.val);
+                    sb.append(',');
+                    queue.add(head.left);
+                }
+                if (head.right == null) {
+                    sb.append("null,");
+                } else {
+                    sb.append(head.right.val);
+                    sb.append(',');
+                    queue.add(head.right);
+                }
+            }
+            int i;
+            for (i = sb.length() - 1; i >=0 ; i--) {
+                if (sb.charAt(i) <= '9' && sb.charAt(i) >= '0') {
+                    break;
+                }
+            }
+            return sb.substring(0, i + 1) + "]";
+        }
+
+        // Decodes your encoded data to tree.
+        public TreeNode deserialize(String data) {
+            if ("[]".equals(data)) {
+                return null;
+            }
+            String[] strs = data.substring(1, data.length() - 1).split(",");
+            TreeNode root = new TreeNode(Integer.parseInt(strs[0]));
+            Queue<TreeNode> queue = new LinkedList<>();
+            queue.add(root);
+            for (int i = 1; i < strs.length; i += 2) {
+                TreeNode head = queue.poll();
+                if (!"null".equals(strs[i])) {
+                    head.left = new TreeNode(Integer.parseInt(strs[i]));
+                    queue.add(head.left);
+                }
+                if (i + 1 < strs.length && !"null".equals(strs[i + 1])) {
+                    head.right = new TreeNode(Integer.parseInt(strs[i + 1]));
+                    queue.add(head.right);
+                }
+            }
+            return root;
+        }
+    }
+
+    public class TreeNode {
+        int val;
+        TreeNode left;
+        TreeNode right;
+
+        TreeNode(int x) {
+            val = x;
+        }
+    }
+
+
     @Test
     public void test() {
         d06_2 o = new d06_2();
+        Codec codec = new Codec();
+        System.out.println(codec.serialize(codec.deserialize("[1,2,3,null,null,4]")));
+        System.out.println(codec.serialize(codec.deserialize("[1,2,3,null,null,4,5]")));
+        System.out.println(codec.serialize(codec.deserialize("[1]")));
+        System.out.println(codec.serialize(codec.deserialize("[]")));
+        System.out.println(codec.serialize(codec.deserialize("[1,2]")));
         System.out.println(threeSum(new int[]{-1, 0, 1, 2, -1, -4}));
         System.out.println(threeSum(new int[]{0, 0, 0, 0}));
     }

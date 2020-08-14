@@ -108,10 +108,72 @@ public class d07_2 {
         }
         List<Integer> lastRow = triangle.get(triangle.size() - 1);
         int res = Integer.MAX_VALUE;
-        for (Integer num: lastRow) {
+        for (Integer num : lastRow) {
             res = Integer.min(res, num);
         }
         return res;
+    }
+
+
+    /**
+     * 7.15 96. 不同的二叉搜索树
+     *
+     * @param n
+     * @return
+     */
+    public int numTrees(int n) {
+        long C = 1;
+        for (int i = 0; i < n; ++i) {
+            C = C * 2 * (2 * i + 1) / (i + 2);
+        }
+        return (int) C;
+    }
+
+
+    /**
+     * 7.16 785. 判断二分图
+     * <p>
+     * BFS + 贪心
+     * 将图分为两种颜色，两种颜色相互间隔开，即为二分图
+     * 每次bfs都将未访问到的点置为与上次相反的颜色
+     *
+     * @param graph
+     * @return
+     */
+    public boolean isBipartite(int[][] graph) {
+        // 0 未访问  1 蓝色  -1 红色
+        int[] color = new int[graph.length];
+        for (int i = 0; i < color.length; i++) {
+            if (color[i] == 0) {
+                boolean b = bfs(graph, i, color);
+                if (!b) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    boolean bfs(int[][] graph, int idx, int[] color) {
+        Queue<Integer> queue = new LinkedList<>();
+        color[idx] = 1;
+        queue.add(idx);
+        while (!queue.isEmpty()) {
+            int preNode = queue.poll();
+            int preColor = color[preNode];
+            int[] edges = graph[preNode];
+            for (int i = 0; i < edges.length; i++) {
+                if (color[graph[preNode][i]] != preColor) {
+                    if (color[graph[preNode][i]] == 0) {
+                        color[graph[preNode][i]] = -preColor;
+                        queue.add(graph[preNode][i]);
+                    }
+                } else {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     @Test
@@ -119,9 +181,9 @@ public class d07_2 {
         d07_2 o = new d07_2();
         List<List<Integer>> triangle = new ArrayList<>();
         List<Integer> l1 = Arrays.asList(2);
-        List<Integer> l2 = Arrays.asList(3,4);
-        List<Integer> l3 = Arrays.asList(6,5,7);
-        List<Integer> l4 = Arrays.asList(4,1,8,3);
+        List<Integer> l2 = Arrays.asList(3, 4);
+        List<Integer> l3 = Arrays.asList(6, 5, 7);
+        List<Integer> l4 = Arrays.asList(4, 1, 8, 3);
         triangle.add(l1);
         triangle.add(l2);
         triangle.add(l3);
