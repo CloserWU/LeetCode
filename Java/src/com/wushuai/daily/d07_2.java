@@ -176,6 +176,60 @@ public class d07_2 {
         return true;
     }
 
+
+    /**
+     * 7.17 35. 搜索插入位置
+     *
+     * @param nums
+     * @param target
+     * @return
+     */
+    public int searchInsert(int[] nums, int target) {
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] == target) {
+                return i;
+            }
+            if (i == nums.length - 1 && nums[i] < target) {
+                return i + 1;
+            }
+            if (i > 0 && nums[i] > target && nums[i - 1] < target) {
+                return i;
+            }
+        }
+        return 0;
+    }
+
+
+    /**
+     * 7.18 97. 交错字符串
+     * 定义 f(i, j)表示 s1的前 i 个元素和 s2的前 jj个元素是否能交错组成 s3的前 i + j个元素
+     * https://leetcode-cn.com/problems/interleaving-string/solution/jiao-cuo-zi-fu-chuan-by-leetcode-solution/
+     *
+     * @param s1
+     * @param s2
+     * @param s3
+     * @return
+     */
+    public boolean isInterleave(String s1, String s2, String s3) {
+        if (s1.length() + s2.length() != s3.length()) {
+            return false;
+        }
+        boolean[][] dp = new boolean[s1.length() + 1][s2.length() + 1];
+        dp[0][0] = true;
+        for (int i = 0; i < dp.length; i++) {
+            for (int j = 0; j < dp[0].length; j++) {
+                int t = i + j - 1;
+                if (i > 0) {
+                    dp[i][j] = dp[i][j] || (dp[i - 1][j] && s1.charAt(i - 1) == s3.charAt(t));
+                }
+                if (j > 0) {
+                    dp[i][j] = dp[i][j] || (dp[i][j - 1] && s2.charAt(j - 1) == s3.charAt(t));
+                }
+            }
+        }
+        return dp[s1.length()][s2.length()];
+    }
+
     @Test
     public void test() {
         d07_2 o = new d07_2();

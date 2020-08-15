@@ -194,7 +194,6 @@ public class d06_2 {
     }
 
 
-
     /**
      * 6.16 297. 二叉树的序列化与反序列化
      */
@@ -229,7 +228,7 @@ public class d06_2 {
                 }
             }
             int i;
-            for (i = sb.length() - 1; i >=0 ; i--) {
+            for (i = sb.length() - 1; i >= 0; i--) {
                 if (sb.charAt(i) <= '9' && sb.charAt(i) >= '0') {
                     break;
                 }
@@ -271,6 +270,22 @@ public class d06_2 {
         }
     }
 
+
+    /**
+     * 6.17 1014. 最佳观光组合
+     *
+     * @param A
+     * @return
+     */
+    public int maxScoreSightseeingPair(int[] A) {
+        int max = 0;
+        int naxn = A[0];
+        for (int i = 1; i < A.length; i++) {
+            max = Integer.max(max, naxn + A[i] - i);
+            naxn = Integer.max(naxn, A[i] + i);
+        }
+        return max;
+    }
 
     @Test
     public void test() {
