@@ -230,6 +230,41 @@ public class d07_2 {
         return dp[s1.length()][s2.length()];
     }
 
+
+    /**
+     * 7.19 312. 戳气球
+     * 以两个数作为左右端点，找出最优解中它们中间那个戳破的气球，
+     * 中间这个气球把整个队列分为了2部分，
+     * 要想让中间这个气球和2个端点靠在一起，
+     * 就需要先把分开的2部分的气球戳破。
+     * dp[i][j]表示i~j最大值，i，j不戳破。
+     * 比如k气球在i,j之间时(i,k,j)被戳破，那么要先戳破i,k、k,j之间的气球，
+     * 所以dp[i][j]=dp[i][k]+dp[k][j]+nums[i]*nums[k]*nums[j]
+     * 对 nums 数组稍作处理，将其两边各加上题目中假设存在的 nums[−1] 和 nums[n] ，并保存在 val 数组中,防止下标越界
+     * 最终答案即为 dp[0][n+1]。实现时要注意到动态规划的次序。
+     * https://leetcode-cn.com/problems/burst-balloons/solution/chuo-qi-qiu-by-leetcode-solution/
+     *
+     * @param nums
+     * @return
+     */
+    public int maxCoins(int[] nums) {
+        int n = nums.length;
+        int[][] dp = new int[n + 2][n + 2];
+        int[] val = new int[n + 2];
+        val[0] = val[n + 1] = 1;
+        System.arraycopy(nums, 0, val, 1, n);
+        for (int i = n - 1; i >= 0; i--) {
+            for (int j = i + 2; j <= n + 1; j++) {
+                for (int k = i + 1; k < j; k++) {
+                    int sum = val[i] * val[k] * val[j];
+                    sum += dp[i][k] + dp[k][j];
+                    dp[i][j] = Integer.max(dp[i][j], sum);
+                }
+            }
+        }
+        return dp[0][n + 1];
+    }
+
     @Test
     public void test() {
         d07_2 o = new d07_2();

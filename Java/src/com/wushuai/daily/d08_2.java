@@ -269,9 +269,50 @@ public class d08_2 {
         return dp[l][r][k];
     }
 
+
+    /**
+     * 8.16 733. 图像渲染
+     *
+     * @param image
+     * @param sr
+     * @param sc
+     * @param newColor
+     * @return
+     */
+    public int[][] floodFill(int[][] image, int sr, int sc, int newColor) {
+        int color = image[sr][sc];
+        if (color == newColor) {
+            return image;
+        }
+        int row = image.length;
+        int col = image[0].length;
+        int[] dx = new int[]{-1, 1, 0, 0};
+        int[] dy = new int[]{0, 0, -1, 1};
+        Queue<int[]> queue = new LinkedList<>();
+        queue.add(new int[]{sr, sc});
+        image[sr][sc] = newColor;
+        while (!queue.isEmpty()) {
+            int[] poll = queue.poll();
+            sr = poll[0];
+            sc = poll[1];
+            for (int i = 0; i < 4; i++) {
+                int newSr = sr + dx[i];
+                int newSc = sc + dy[i];
+                if (newSr >= 0 && newSr < row && newSc >= 0 && newSc < col) {
+                    if (image[newSr][newSc] == color) {
+                        queue.add(new int[]{newSr, newSc});
+                        image[newSr][newSc] = newColor;
+                    }
+                }
+            }
+        }
+        return image;
+    }
+
     @Test
     public void test() {
         d08_2 o = new d08_2();
+        System.out.println(floodFill(new int[][]{{0, 0, 0}, {0, 1, 1}}, 1, 1, 1));
         System.out.println(multiply("0", "456"));
         System.out.println(multiply("1", "456"));
         System.out.println(multiply("1", "1"));

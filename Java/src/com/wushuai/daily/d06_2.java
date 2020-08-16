@@ -287,8 +287,89 @@ public class d06_2 {
         return max;
     }
 
+
+    /**
+     * 6.18 1028. 从先序遍历还原二叉树
+     * 记当前节点为 T，上一个节点为 S，那么实际上只有两种情况：
+     * 1. T 是 S 的左子节点；
+     * 2. T 是根节点到 S 这一条路径上（不包括 SS）某一个节点的右子节点。
+     * 为什么不包括 S？因为题目中规定了如果节点只有一个子节点，那么保证该子节点为左子节点。
+     * 在 T 出现之前，S 仍然还是一个叶节点，没有左子节点，
+     * 因此 T 如果是 S 的子节点，一定是优先变成 S 的左子节点。
+     * 对于在先序遍历中任意的两个相邻的节点 S 和 T，
+     * 要么 T 就是 S 的左子节点（对应上面的第一种情况），
+     * 要么在遍历到 S 之后发现 S 是个叶节点，
+     * 于是回溯到之前的某个节点，并开始递归地遍历其右子节点（对应上面的第二种情况）。
+     * 这样以来，我们按照顺序维护从根节点到当前节点的路径上的所有节点
+     * https://leetcode-cn.com/problems/recover-a-tree-from-preorder-traversal/solution/cong-xian-xu-bian-li-huan-yuan-er-cha-shu-by-leetc/
+     *
+     * @param s
+     * @return
+     */
+    public TreeNode recoverFromPreorder(String s) {
+        Deque<TreeNode> deque = new LinkedList<>();
+        int pos = 0, level, num;
+        while (pos < s.length()) {
+            level = num = 0;
+            while (s.charAt(pos) == '-') {
+                level++;
+                pos++;
+            }
+            while (pos < s.length() && Character.isDigit(s.charAt(pos))) {
+                num = num * 10 + (s.charAt(pos) - '0');
+                pos++;
+            }
+            TreeNode node = new TreeNode(num);
+            if (level == deque.size()) {
+                if (!deque.isEmpty()) {
+                    deque.peek().left = node;
+                }
+            } else {
+                while (!deque.isEmpty() && deque.size() != level) {
+                    deque.pop();
+                }
+                deque.peek().right = node;
+            }
+            deque.push(node);
+        }
+        while (deque.size() > 1) {
+            deque.pop();
+        }
+        return deque.peek();
+    }
+
+
+    /**
+     * 6.19 125. 验证回文串
+     * isLetterOrDigit
+     * isLetter
+     * isDigit
+     *
+     * @param s
+     * @return
+     */
+    public boolean isPalindrome(String s) {
+        int left = 0, right = s.length() - 1;
+        while (left < right) {
+            while (left < right && !Character.isLetterOrDigit(s.charAt(left))) {
+                left++;
+            }
+            while (left < right && !Character.isLetterOrDigit(s.charAt(right))) {
+                right--;
+            }
+            if (Character.toLowerCase(s.charAt(left)) != Character.toLowerCase(s.charAt(right))) {
+                return false;
+            } else {
+                left++;
+                right--;
+            }
+        }
+        return true;
+    }
+
     @Test
     public void test() {
+        System.out.println(isPalindrome("0P"));
         d06_2 o = new d06_2();
         Codec codec = new Codec();
         System.out.println(codec.serialize(codec.deserialize("[1,2,3,null,null,4]")));
