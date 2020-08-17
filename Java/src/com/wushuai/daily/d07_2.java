@@ -264,6 +264,28 @@ public class d07_2 {
         }
         return dp[0][n + 1];
     }
+    
+    
+    /**
+     * 7.20 167. 两数之和 II - 输入有序数组
+     */
+    public int[] twoSum(int[] numbers, int target) {
+        for (int i = 0; i < numbers.length; ++i) {
+            int low = i + 1, high = numbers.length - 1;
+            while (low <= high) {
+                int mid = (high - low) / 2 + low;
+                if (numbers[mid] == target - numbers[i]) {
+                    return new int[]{i + 1, mid + 1};
+                } else if (numbers[mid] > target - numbers[i]) {
+                    high = mid - 1;
+                } else {
+                    low = mid + 1;
+                }
+            }
+        }
+        return new int[]{-1, -1};
+    }
+
 
     @Test
     public void test() {
