@@ -308,6 +308,82 @@ public class d08_2 {
         }
         return image;
     }
+    
+    
+    /**
+     * 8.17 110. 平衡二叉树
+     */
+    public boolean isBalanced(TreeNode root) {
+        return helper(root) != -1;
+    }
+    
+    int helper(TreeNode root) {
+        if (root != null) {
+            int left = helper(root.left);
+            if (left == -1) {
+                return -1;
+            }
+            int right = helper(root.right);
+            if (right == -1) {
+                return -1;
+            }
+            if (Math.abs(right - left) <= 1) {
+                return 1 + Math.max(right, left);
+            }
+            return -1;
+        }
+        return 0;
+    }
+    
+    
+    
+    public class TreeNode {
+        int val;
+        TreeNode left;
+        TreeNode right;
+        TreeNode() {}
+        TreeNode(int val) { this.val = val; }
+        TreeNode(int val, TreeNode left, TreeNode right) {
+            this.val = val;
+            this.left = left;
+            this.right = right;
+        }
+    }
+    
+    
+    public class ListNode {
+        int val;
+        ListNode next;
+        ListNode() {}
+        ListNode(int val) { this.val = val; }
+        ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+    }
+    
+    /**
+     * 8.18 109. 有序链表转换二叉搜索树
+     */
+    public TreeNode sortedListToBST(ListNode head) {
+        List<Integer> list = new ArrayList<>();
+        while (head != null) {
+            list.add(head.val);
+            head = head.next;
+        }
+        return recursive(0, list.size() - 1, list);
+    }
+
+    TreeNode recursive(int left, int right, List<Integer> list) {
+        if (left > right) {
+            return null;
+        } else if (left == right) {
+            return new TreeNode(list.get(left));
+        } else {
+            int mid = (left + right) >>> 1;
+            TreeNode root = new TreeNode(list.get(mid));
+            root.left = recursive(left, mid - 1, list);
+            root.right = recursive(mid + 1, right, list);
+            return root;
+        }
+    }
 
     @Test
     public void test() {
