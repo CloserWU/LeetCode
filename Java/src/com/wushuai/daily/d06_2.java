@@ -366,6 +366,16 @@ public class d06_2 {
         }
         return true;
     }
+    
+    
+    /**
+     * 6.20 10. 正则表达式匹配
+     * too hard
+     */
+    public boolean isMatch(String s, String p) {
+        return true;
+    }
+    
 
     @Test
     public void test() {
