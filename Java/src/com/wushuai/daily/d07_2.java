@@ -264,10 +264,14 @@ public class d07_2 {
         }
         return dp[0][n + 1];
     }
-    
-    
+
+
     /**
-     * 7.20 167. 两数之和 II - 输入有序数组
+     * 7.20 7.20 167. 两数之和 II - 输入有序数组
+     *
+     * @param numbers
+     * @param target
+     * @return
      */
     public int[] twoSum(int[] numbers, int target) {
         for (int i = 0; i < numbers.length; ++i) {
