@@ -35,12 +35,44 @@ public class d07_3 {
 
     /**
      * 7.21 95. 不同的二叉搜索树 II
+     * https://leetcode-cn.com/problems/unique-binary-search-trees-ii/solution/
      *
      * @param n
      * @return
      */
     public List<TreeNode> generateTrees(int n) {
-        return null;
+        if (n == 0) {
+            return new LinkedList<>();
+        }
+        return generateTrees(1, n);
+    }
+
+    public List<TreeNode> generateTrees(int start, int end) {
+        List<TreeNode> allTrees = new LinkedList<>();
+        if (start > end) {
+            allTrees.add(null);
+            return allTrees;
+        }
+
+        // 枚举可行根节点
+        for (int i = start; i <= end; i++) {
+            // 获得所有可行的左子树集合
+            List<TreeNode> leftTrees = generateTrees(start, i - 1);
+
+            // 获得所有可行的右子树集合
+            List<TreeNode> rightTrees = generateTrees(i + 1, end);
+
+            // 从左子树集合中选出一棵左子树，从右子树集合中选出一棵右子树，拼接到根节点上
+            for (TreeNode left : leftTrees) {
+                for (TreeNode right : rightTrees) {
+                    TreeNode currTree = new TreeNode(i);
+                    currTree.left = left;
+                    currTree.right = right;
+                    allTrees.add(currTree);
+                }
+            }
+        }
+        return allTrees;
     }
 
 
@@ -111,6 +143,6 @@ public class d07_3 {
     @Test
     public void test() {
         d07_3 o = new d07_3();
-
+        System.out.println(generateTrees(3));
     }
 }
