@@ -100,6 +100,73 @@ public class d08_1 {
     }
 
 
+    /**
+     * 滑动窗口+哈希表
+     * https://leetcode-cn.com/problems/smallest-range-covering-elements-from-k-lists/solution/zui-xiao-qu-jian-by-leetcode-solution/
+     *
+     * @param nums
+     * @return
+     */
+    public int[] smallestRangeV2(List<List<Integer>> nums) {
+        int size = nums.size();
+        // 建立<数组元素，下标序列>哈希表
+        Map<Integer, List<Integer>> indices = new HashMap<Integer, List<Integer>>();
+        int xMin = Integer.MAX_VALUE, xMax = Integer.MIN_VALUE;
+        for (int i = 0; i < size; i++) {
+            for (int x : nums.get(i)) {
+                List<Integer> list = indices.getOrDefault(x, new ArrayList<Integer>());
+                list.add(i);
+                indices.put(x, list);
+                // 数组元素最小值
+                xMin = Math.min(xMin, x);
+                // 数组元素最大值
+                xMax = Math.max(xMax, x);
+            }
+        }
+        // 下标序列出现次数
+        int[] freq = new int[size];
+        // 有几个下标出现了
+        int inside = 0;
+        // 双指针直到右指针大于最大元素值 （枚举最小元素到最大元素）
+        int left = xMin, right = xMin - 1;
+        int bestLeft = xMin, bestRight = xMax;
+        // right移动，并更新下标出现次数和下标个数
+        while (right < xMax) {
+            right++;
+            // 获取这个数组元素的下标序列
+            if (indices.containsKey(right)) {
+                // 遍历下标序列
+                for (int x : indices.get(right)) {
+                    freq[x]++;
+                    // 若下标第一次出现，则下标个数+1
+                    if (freq[x] == 1) {
+                        inside++;
+                    }
+                }
+                // nums数组中所有下标都出现过一次了，
+                while (inside == size) {
+                    // 更新
+                    if (right - left < bestRight - bestLeft) {
+                        bestLeft = left;
+                        bestRight = right;
+                    }
+                    // 移动左指针，直到不满足(下标不是全部出现)
+                    if (indices.containsKey(left)) {
+                        for (int x : indices.get(left)) {
+                            freq[x]--;
+                            if (freq[x] == 0) {
+                                inside--;
+                            }
+                        }
+                    }
+                    left++;
+                }
+            }
+        }
+        return new int[]{bestLeft, bestRight};
+    }
+
+
     public class TreeNode {
         int val;
         TreeNode left;
@@ -459,7 +526,7 @@ public class d08_1 {
     public int countBinarySubstrings(String s) {
         int res = 0, pre = 0, h = 0;
         int tmp = 0;
-        for (int i = 0; i < s.length();) {
+        for (int i = 0; i < s.length(); ) {
             while (i < s.length() && s.charAt(i) - '0' == tmp) {
                 h++;
                 i++;

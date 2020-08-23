@@ -98,6 +98,24 @@ public class d08_3 {
         return false;
     }
 
+
+    /**
+     * 8.23 201. 数字范围按位与
+     *
+     * @param m
+     * @param n
+     * @return
+     */
+    public int rangeBitwiseAnd(int m, int n) {
+        int shift = 0;
+        while (m < n) {
+            m >>= 1;
+            n >>= 1;
+            ++shift;
+        }
+        return m << shift;
+    }
+
     @Test
     public void test() {
         d08_3 o = new d08_3();

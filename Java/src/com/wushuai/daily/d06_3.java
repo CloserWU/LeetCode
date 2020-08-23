@@ -2,6 +2,8 @@ package com.wushuai.daily;
 
 import org.junit.Test;
 
+import java.util.Arrays;
+
 /**
  * <p>d06_3</p>
  * <p>description</p>
@@ -55,12 +57,70 @@ public class d06_3 {
 
     /**
      * 6.22 面试题 16.18. 模式匹配
+     * https://leetcode-cn.com/problems/pattern-matching-lcci/solution/mo-shi-pi-pei-by-leetcode-solution/
      *
      * @param pattern
      * @param value
      * @return
      */
     public boolean patternMatching(String pattern, String value) {
+        int count_a = 0, count_b = 0;
+        for (char ch: pattern.toCharArray()) {
+            if (ch == 'a') {
+                ++count_a;
+            } else {
+                ++count_b;
+            }
+        }
+        if (count_a < count_b) {
+            int temp = count_a;
+            count_a = count_b;
+            count_b = temp;
+            char[] array = pattern.toCharArray();
+            for (int i = 0; i < array.length; i++) {
+                array[i] = array[i] == 'a' ? 'b' : 'a';
+            }
+            pattern = new String(array);
+        }
+        if (value.length() == 0) {
+            return count_b == 0;
+        }
+        if (pattern.length() == 0) {
+            return false;
+        }
+        for (int len_a = 0; count_a * len_a <= value.length(); ++len_a) {
+            int rest = value.length() - count_a * len_a;
+            if ((count_b == 0 && rest == 0) || (count_b != 0 && rest % count_b == 0)) {
+                int len_b = (count_b == 0 ? 0 : rest / count_b);
+                int pos = 0;
+                boolean correct = true;
+                String value_a = "", value_b = "";
+                for (char ch: pattern.toCharArray()) {
+                    if (ch == 'a') {
+                        String sub = value.substring(pos, pos + len_a);
+                        if (value_a.length() == 0) {
+                            value_a = sub;
+                        } else if (!value_a.equals(sub)) {
+                            correct = false;
+                            break;
+                        }
+                        pos += len_a;
+                    } else {
+                        String sub = value.substring(pos, pos + len_b);
+                        if (value_b.length() == 0) {
+                            value_b = sub;
+                        } else if (!value_b.equals(sub)) {
+                            correct = false;
+                            break;
+                        }
+                        pos += len_b;
+                    }
+                }
+                if (correct && !value_a.equals(value_b)) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
@@ -73,7 +133,45 @@ public class d06_3 {
      * @return
      */
     public String addBinary(String a, String b) {
-        return null;
+        StringBuilder sb1 = new StringBuilder(a).reverse();
+        StringBuilder sb2 = new StringBuilder(b).reverse();
+        StringBuilder res = new StringBuilder();
+        int add = 0;
+        int i = 0, j = 0;
+        while (i < sb1.length() && j < sb2.length()) {
+            int x = sb1.charAt(i) - '0' + sb2.charAt(j) - '0' + add;
+            add = 0;
+            if (x > 1) {
+                add = 1;
+                x -= 2;
+            }
+            res.append(x);
+            i++;
+            j++;
+        }
+        while (i < sb1.length()) {
+            int x = sb1.charAt(i++) - '0' + add;
+            add = 0;
+            if (x > 1) {
+                add = 1;
+                x -= 2;
+            }
+            res.append(x);
+        }
+        while (j < sb2.length()) {
+            int x = sb2.charAt(j++) - '0' + add;
+            add = 0;
+            if (x > 1) {
+                add = 1;
+                x -= 2;
+            }
+            res.append(x);
+        }
+        if (add != 0) {
+            res.append(1);
+            add = 0;
+        }
+        return res.reverse().toString();
     }
 
 
@@ -85,13 +183,33 @@ public class d06_3 {
      * @return
      */
     public int threeSumClosest(int[] nums, int target) {
-        return 0;
+        int res = Integer.MAX_VALUE;
+        int ans = 0;
+        Arrays.sort(nums);
+        for (int i = 0; i < nums.length - 2; i++) {
+            int left = i + 1, right = nums.length - 1;
+            while (left < right) {
+                int add = nums[i] + nums[left] + nums[right];
+                if (Math.abs(target - add) < res) {
+                    ans = add;
+                    res = Math.abs(target - add);
+                }
+                if (add > target) {
+                    right--;
+                } else if (add < target) {
+                    left++;
+                } else {
+                    return target;
+                }
+            }
+        }
+        return ans;
     }
 
 
     @Test
     public void test() {
         d06_3 o = new d06_3();
-
+        System.out.println(threeSumClosest(new int[]{-1, 2, 1, -4}, 1));
     }
 }
