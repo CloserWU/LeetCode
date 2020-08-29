@@ -301,6 +301,32 @@ public class d08_3 {
     }
 
 
+    /**
+     * 8.29 214. 最短回文串
+     * 字符串哈希
+     * https://leetcode-cn.com/problems/shortest-palindrome/solution/zui-duan-hui-wen-chuan-by-leetcode-solution/
+     *
+     * @param s
+     * @return
+     */
+    public String shortestPalindrome(String s) {
+        int left = 0, right = 0, mul = 1, best = -1;
+        int mod = 1000000007, base = 131;
+        for (int i = 0; i < s.length(); i++) {
+            left = (int) (((long) left * base + s.charAt(i)) % mod);
+            right = (int) ((right + (long) mul * s.charAt(i)) % mod);
+            mul = (int) ((long) mul * base % mod);
+            if (left == right) {
+                best = i;
+            }
+        }
+        String add = (best == s.length() - 1) ? "" : s.substring(best + 1);
+        StringBuilder sb = new StringBuilder(add).reverse();
+        sb.append(s);
+        return sb.toString();
+    }
+
+
     @Test
     public void test() {
         d08_3 o = new d08_3();
