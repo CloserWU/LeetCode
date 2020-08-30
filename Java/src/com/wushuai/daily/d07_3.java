@@ -226,6 +226,93 @@ public class d07_3 {
         return memo[x][y];
     }
 
+
+    /**
+     * 7.27 392. 判断子序列
+     *
+     * @param s
+     * @param t
+     * @return
+     */
+    public boolean isSubsequence(String s, String t) {
+        int i = 0, j = 0;
+        while (i < s.length() && j < t.length()) {
+            if (s.charAt(i) == t.charAt(j)) {
+                j++;
+                i++;
+            } else {
+                j++;
+            }
+        }
+        return i == s.length();
+    }
+
+
+    /**
+     * 7.28 104. 二叉树的最大深度
+     *
+     * @param root
+     * @return
+     */
+    public int maxDepth(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        int left = maxDepth(root.left);
+        int right = maxDepth(root.right);
+        return Integer.max(left, right) + 1;
+    }
+
+
+    /**
+     * 7.29 LCP 13. 寻宝
+     * 状压dp
+     * https://leetcode-cn.com/problems/xun-bao/solution/xun-bao-bfs-dp-by-leetcode-solution/
+     *
+     * @param maze
+     * @return
+     */
+    public int minimalSteps(String[] maze) {
+        // too hard
+        return 0;
+    }
+
+
+    /**
+     * 7.30 343. 整数拆分
+     * https://leetcode-cn.com/problems/integer-break/solution/zheng-shu-chai-fen-by-leetcode-solution/
+     *
+     * @param n
+     * @return
+     */
+    public int integerBreak(int n) {
+        int[] dp = new int[n + 1];
+        for (int i = 2; i <= n; i++) {
+            int cur = 0;
+            for (int j = 1; j < i; j++) {
+                cur = Integer.max(cur, Integer.max(j * (i - j), j * dp[i - j]));
+            }
+            dp[i] = cur;
+        }
+        return dp[n];
+    }
+
+
+    /**
+     * 7.31 面试题 08.03. 魔术索引
+     *
+     * @param nums
+     * @return
+     */
+    public int findMagicIndex(int[] nums) {
+        for (int i = 0; i < nums.length; i++) {
+            if (i == nums[i]) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     @Test
     public void test() {
         d07_3 o = new d07_3();
