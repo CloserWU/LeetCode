@@ -2,7 +2,7 @@ package com.wushuai.daily;
 
 import org.junit.Test;
 
-import java.util.Arrays;
+import java.util.*;
 
 /**
  * <p>d06_3</p>
@@ -65,7 +65,7 @@ public class d06_3 {
      */
     public boolean patternMatching(String pattern, String value) {
         int count_a = 0, count_b = 0;
-        for (char ch: pattern.toCharArray()) {
+        for (char ch : pattern.toCharArray()) {
             if (ch == 'a') {
                 ++count_a;
             } else {
@@ -95,7 +95,7 @@ public class d06_3 {
                 int pos = 0;
                 boolean correct = true;
                 String value_a = "", value_b = "";
-                for (char ch: pattern.toCharArray()) {
+                for (char ch : pattern.toCharArray()) {
                     if (ch == 'a') {
                         String sub = value.substring(pos, pos + len_a);
                         if (value_a.length() == 0) {
@@ -207,9 +207,113 @@ public class d06_3 {
     }
 
 
+    class Trie {
+        boolean flag;
+        Trie[] next;
+
+        Trie() {
+            flag = false;
+            next = new Trie[26];
+        }
+    }
+
+    void insert(String s, Trie root) {
+        for (char ch : s.toCharArray()) {
+            int x = ch - 'a';
+            if (root.next[x] == null) {
+                root.next[x] = new Trie();
+            }
+            root = root.next[x];
+        }
+        root.flag = true;
+    }
+
+    boolean find(String s, Trie root) {
+        for (char ch : s.toCharArray()) {
+            int x = ch - 'a';
+            if (root.next[x] == null) {
+                return false;
+            }
+            root = root.next[x];
+        }
+        return root.flag;
+    }
+
+    Trie trie = new Trie();
+
+    /**
+     * 6.25 139. 单词拆分
+     * TTL
+     *
+     * @param s
+     * @param wordDict
+     * @return
+     */
+    public boolean wordBreak(String s, List<String> wordDict) {
+        if (wordDict.size() == 0) {
+            return "".equals(s);
+        }
+        Trie root = trie;
+        for (String str : wordDict) {
+            insert(str, root);
+            root = trie;
+        }
+        return dfs(s, 0);
+    }
+
+    boolean dfs(String s, int idx) {
+        Trie root = trie;
+        for (int i = idx; i < s.length(); i++) {
+            if (root == null) {
+                return false;
+            }
+            int x = s.charAt(i) - 'a';
+            if (root.flag) {
+                boolean f = dfs(s, i);
+                if (f) {
+                    return true;
+                }
+            }
+            root = root.next[x];
+        }
+        if (root == null) {
+            return false;
+        }
+        return root.flag;
+    }
+
+
+    /**
+     * 6.25 139. 单词拆分
+     * dp
+     * https://leetcode-cn.com/problems/word-break/solution/dan-ci-chai-fen-by-leetcode-solution/
+     *
+     * @param s
+     * @param wordDict
+     * @return
+     */
+    public boolean wordBreakV2(String s, List<String> wordDict) {
+        Set<String> wordDictSet = new HashSet<>(wordDict);
+        boolean[] dp = new boolean[s.length() + 1];
+        dp[0] = true;
+        for (int i = 1; i <= s.length(); i++) {
+            for (int j = 0; j < i; j++) {
+                if (dp[j] && wordDictSet.contains(s.substring(j, i))) {
+                    dp[i] = true;
+                    break;
+                }
+            }
+        }
+        return dp[s.length()];
+    }
+
+
     @Test
     public void test() {
         d06_3 o = new d06_3();
+        System.out.println(wordBreak("leetcode", new ArrayList<>(Arrays.asList("leet", "code"))));
+        System.out.println(wordBreak("applepenapple", new ArrayList<>(Arrays.asList("apple", "pen"))));
+        System.out.println(wordBreak("catsandog", new ArrayList<>(Arrays.asList("cats", "dog", "sand", "and", "cat"))));
         System.out.println(threeSumClosest(new int[]{-1, 2, 1, -4}, 1));
     }
 }

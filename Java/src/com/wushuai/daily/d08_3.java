@@ -327,6 +327,24 @@ public class d08_3 {
     }
 
 
+    /**
+     * 8.30 557. 反转字符串中的单词 III
+     *
+     * @param s
+     * @return
+     */
+    public String reverseWords(String s) {
+        StringBuilder sb = new StringBuilder();
+        String[] strs = s.split(" ");
+        for (String str : strs) {
+            str = new StringBuilder(str).reverse().toString();
+            sb.append(str);
+            sb.append(' ');
+        }
+        return sb.substring(0, sb.length() - 1);
+    }
+
+
     @Test
     public void test() {
         d08_3 o = new d08_3();
