@@ -308,9 +308,174 @@ public class d06_3 {
     }
 
 
+    public class ListNode {
+        int val;
+        ListNode next;
+
+        ListNode(int x) {
+            val = x;
+        }
+    }
+
+    /**
+     * 6.26 面试题 02.01. 移除重复节点
+     *
+     * @param head
+     * @return
+     */
+    public ListNode removeDuplicateNodes(ListNode head) {
+        Set<Integer> set = new HashSet<>();
+        ListNode root = new ListNode(-1);
+        ListNode tmp = root;
+        root.next = head;
+        while (head != null) {
+            if (set.contains(head.val)) {
+                root.next = head.next;
+                head = head.next;
+            } else {
+                set.add(head.val);
+                head = head.next;
+                root = root.next;
+            }
+        }
+        return tmp.next;
+    }
+
+
+    /**
+     * 6.27 41. 缺失的第一个正数
+     * 自定义哈希
+     * https://leetcode-cn.com/problems/first-missing-positive/solution/que-shi-de-di-yi-ge-zheng-shu-by-leetcode-solution/
+     *
+     * @param nums
+     * @return
+     */
+    public int firstMissingPositive(int[] nums) {
+        int n = nums.length;
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] <= 0) {
+                nums[i] = n + 1;
+            }
+        }
+        for (int i = 0; i < nums.length; i++) {
+            int num = Math.abs(nums[i]);
+            if (num <= n) {
+                nums[num - 1] = -Math.abs(nums[num - 1]);
+            }
+        }
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] > 0) {
+                return i + 1;
+            }
+        }
+        return n + 1;
+    }
+
+
+    /**
+     * 6.28 209. 长度最小的子数组
+     * 滑动窗口，注意边界值
+     *
+     * @param s
+     * @param nums
+     * @return
+     */
+    public int minSubArrayLen(int s, int[] nums) {
+        if (nums.length == 0) {
+            return 0;
+        }
+        int left = 0, right = 0;
+        int cnt = nums[0], res = Integer.MAX_VALUE;
+        do {
+            while (cnt < s && right != nums.length - 1) {
+                cnt += nums[++right];
+            }
+            while (cnt >= s && left <= right) {
+                res = Integer.min(res, right - left + 1);
+                cnt -= nums[left++];
+            }
+        } while (right != nums.length - 1);
+        return res == Integer.MAX_VALUE ? 0 : res;
+    }
+
+
+    /**
+     * 6.29 215. 数组中的第K个最大元素
+     * 快排二分改造
+     *
+     * @param nums
+     * @param k
+     * @return
+     */
+    public int findKthLargest(int[] nums, int k) {
+        return quickSelect(nums, 0, nums.length - 1, nums.length - k);
+    }
+
+    public int quickSelect(int[] a, int l, int r, int index) {
+        int q = partition(a, l, r);
+        if (q == index) {
+            return a[q];
+        } else {
+            return q < index ?
+                    quickSelect(a, q + 1, r, index) :
+                    quickSelect(a, l, q - 1, index);
+        }
+    }
+
+    int partition(int[] a, int l, int r) {
+        int x = a[l];
+        while (l < r) {
+            while (l < r && x <= a[r]) {
+                r--;
+            }
+            a[l] = a[r];
+            while (l < r && x >= a[l]) {
+                l++;
+            }
+            a[r] = a[l];
+        }
+        a[l] = x;
+        return l;
+    }
+
+    /**
+     * 6.30 剑指 Offer 09. 用两个栈实现队列
+     */
+    class CQueue {
+        Stack<Integer> in = null;
+        Stack<Integer> out = null;
+
+        public CQueue() {
+            in = new Stack<>();
+            out = new Stack<>();
+        }
+
+        public void appendTail(int value) {
+            in.push(value);
+        }
+
+        public int deleteHead() {
+            if (out.empty()) {
+                while (!in.empty()) {
+                    out.push(in.pop());
+                }
+            }
+            if (out.empty()) {
+                return -1;
+            } else {
+                return out.pop();
+            }
+        }
+    }
+
+
     @Test
     public void test() {
         d06_3 o = new d06_3();
+        System.out.println(findKthLargest(new int[]{3, 2, 3, 1, 2, 4, 5, 5, 6}, 2));
+        System.out.println(minSubArrayLen(7, new int[]{7}));
+        System.out.println(minSubArrayLen(7, new int[]{7, 7}));
+        System.out.println(minSubArrayLen(7, new int[]{2, 3, 1, 2, 4, 3}));
         System.out.println(wordBreak("leetcode", new ArrayList<>(Arrays.asList("leet", "code"))));
         System.out.println(wordBreak("applepenapple", new ArrayList<>(Arrays.asList("apple", "pen"))));
         System.out.println(wordBreak("catsandog", new ArrayList<>(Arrays.asList("cats", "dog", "sand", "and", "cat"))));
