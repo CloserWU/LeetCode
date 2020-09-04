@@ -2,6 +2,8 @@ package com.wushuai.daily;
 
 import org.junit.Test;
 
+import java.util.*;
+
 /**
  * <p>d09_1</p>
  * <p>description</p>
@@ -35,9 +37,129 @@ public class d09_1 {
         return dp[0][n - 1] >= 0;
     }
 
+
+    /**
+     * 9.02 剑指 Offer 20. 表示数值的字符串
+     *
+     * @param s
+     * @return
+     */
+    public boolean isNumber(String s) {
+        return s.matches("^(\\s)*(\\+|-)?(([0-9]*\\.[0-9]+)|([0-9]+\\.[0-9]*)|[0-9]+)((e|E)(\\+|-)?[0-9]+)?(\\s)*$");
+    }
+
+
+    /**
+     * 9.03 51. N 皇后
+     * 经典题
+     *
+     * @param n
+     * @return
+     */
+    public List<List<String>> solveNQueens(int n) {
+        int[] queens = new int[n];
+        Arrays.fill(queens, -1);
+        Set<Integer> columns = new HashSet<>();
+        Set<Integer> diagonals1 = new HashSet<>();
+        Set<Integer> diagonals2 = new HashSet<>();
+        List<List<String>> res = new ArrayList<>();
+        backtrack(res, columns, diagonals1, diagonals2, 0, queens);
+        return res;
+    }
+
+    void backtrack(List<List<String>> res, Set<Integer> columns, Set<Integer> diagonals1,
+                   Set<Integer> diagonals2, int row, int[] queens) {
+        if (row == queens.length) {
+            List<String> s = generateBoard(queens);
+            res.add(s);
+            return;
+        }
+        for (int i = 0; i < queens.length; i++) {
+            if (columns.contains(i)) {
+                continue;
+            }
+            int diagonal1 = row - i;
+            if (diagonals1.contains(diagonal1)) {
+                continue;
+            }
+            int diagonal2 = row + i;
+            if (diagonals2.contains(diagonal2)) {
+                continue;
+            }
+            queens[row] = i;
+            columns.add(i);
+            diagonals1.add(diagonal1);
+            diagonals2.add(diagonal2);
+            backtrack(res, columns, diagonals1, diagonals2, row + 1, queens);
+            queens[row] = -1;
+            columns.remove(i);
+            diagonals1.remove(diagonal1);
+            diagonals2.remove(diagonal2);
+        }
+    }
+
+    List<String> generateBoard(int[] queens) {
+        List<String> list = new ArrayList<>();
+        for (int queen : queens) {
+            char[] row = new char[queens.length];
+            Arrays.fill(row, '.');
+            row[queen] = 'Q';
+            list.add(new String(row));
+        }
+        return list;
+    }
+
+
+
+    public class TreeNode {
+        int val;
+        TreeNode left;
+        TreeNode right;
+
+        TreeNode(int x) {
+            val = x;
+        }
+    }
+
+    /**
+     * 9.04 257. 二叉树的所有路径
+     *
+     * @param root
+     * @return
+     */
+    public List<String> binaryTreePaths(TreeNode root) {
+        List<String> res = new ArrayList<>();
+        dfs(res, new ArrayList<>(), root);
+        return res;
+    }
+
+    void dfs(List<String> res, List<Integer> path, TreeNode root) {
+        if (root == null) {
+            return;
+        }
+        if (root.left == null && root.right == null) {
+            path.add(root.val);
+            StringBuilder sb = new StringBuilder();
+            for(Integer in : path) {
+                sb.append("->");
+                sb.append(in);
+            }
+            res.add(sb.substring(2));
+            return;
+        }
+        path.add(root.val);
+        if (root.left != null) {
+            dfs(res, path, root.left);
+            path.remove(path.size() - 1);
+        }
+        if (root.right != null) {
+            dfs(res, path, root.right);
+            path.remove(path.size() - 1);
+        }
+    }
+
     @Test
     public void test() {
         d09_1 o = new d09_1();
-
     }
 }
