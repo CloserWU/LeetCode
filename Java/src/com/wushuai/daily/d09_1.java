@@ -110,7 +110,6 @@ public class d09_1 {
     }
 
 
-
     public class TreeNode {
         int val;
         TreeNode left;
@@ -140,7 +139,7 @@ public class d09_1 {
         if (root.left == null && root.right == null) {
             path.add(root.val);
             StringBuilder sb = new StringBuilder();
-            for(Integer in : path) {
+            for (Integer in : path) {
                 sb.append("->");
                 sb.append(in);
             }
@@ -158,8 +157,53 @@ public class d09_1 {
         }
     }
 
+
+    /**
+     * 9.05 60. 第k个排列
+     * **从小到大全排列**
+     *
+     * @param n
+     * @param k
+     * @return
+     */
+    public String getPermutation(int n, int k) {
+        List<String> res = new ArrayList<>();
+        StringBuilder sb = new StringBuilder();
+        int[] arr = new int[n];
+        boolean[] visit = new boolean[n];
+        for (int i = 0; i < n; i++) {
+            arr[i] = i + 1;
+        }
+        getPermutation(res, arr, visit, sb, k);
+//        System.out.println(res);
+//        Collections.sort(res);
+        return res.get(k - 1);
+    }
+
+
+    void getPermutation(List<String> res, int[] arr, boolean[] visit, StringBuilder sb, int k) {
+        if (res.size() == k) {
+            return;
+        }
+        if (sb.length() == arr.length) {
+            res.add(sb.toString());
+            return;
+        }
+        for (int i = 0; i < arr.length; i++) {
+            if (!visit[i]) {
+                sb.append(arr[i]);
+                visit[i] = true;
+                getPermutation(res, arr, visit, sb, k);
+                sb.setLength(sb.length() - 1);
+                visit[i] = false;
+            }
+        }
+    }
+
     @Test
     public void test() {
         d09_1 o = new d09_1();
+        System.out.println(getPermutation(3, 3));
+        System.out.println(getPermutation(4, 9));
     }
 }
