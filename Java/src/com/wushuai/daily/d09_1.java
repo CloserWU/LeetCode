@@ -161,6 +161,7 @@ public class d09_1 {
     /**
      * 9.05 60. 第k个排列
      * **从小到大全排列**
+     * **全排列用回溯**
      *
      * @param n
      * @param k
@@ -197,6 +198,110 @@ public class d09_1 {
                 sb.setLength(sb.length() - 1);
                 visit[i] = false;
             }
+        }
+    }
+
+
+    /**
+     * 9.06 107. 二叉树的层次遍历 II
+     *
+     * @param root
+     * @return
+     */
+    public List<List<Integer>> levelOrderBottom(TreeNode root) {
+        if (root == null) {
+            return new ArrayList<>();
+        }
+        Queue<TreeNode> queue = new LinkedList<>();
+        List<List<Integer>> res = new LinkedList<>();
+        queue.add(root);
+        while (!queue.isEmpty()) {
+            List<TreeNode> tmp = new ArrayList<>();
+            List<Integer> list = new ArrayList<>();
+            while (!queue.isEmpty()) {
+                TreeNode poll = queue.poll();
+                tmp.add(poll);
+                list.add(poll.val);
+            }
+            res.add(0, list);
+            for (TreeNode node : tmp) {
+                if (node.left != null) {
+                    queue.add(node.left);
+                }
+                if (node.right != null) {
+                    queue.add(node.right);
+                }
+            }
+        }
+        return res;
+    }
+
+
+    /**
+     * 9.07 347. 前 K 个高频元素
+     *
+     * @param nums
+     * @param k
+     * @return
+     */
+    public int[] topKFrequent(int[] nums, int k) {
+        Map<Integer, Integer> occurrences = new HashMap<Integer, Integer>();
+        for (int num : nums) {
+            occurrences.put(num, occurrences.getOrDefault(num, 0) + 1);
+        }
+
+        // int[] 的第一个元素代表数组的值，第二个元素代表了该值出现的次数
+        PriorityQueue<int[]> queue = new PriorityQueue<int[]>(new Comparator<int[]>() {
+            @Override
+            public int compare(int[] m, int[] n) {
+                return m[1] - n[1];
+            }
+        });
+        for (Map.Entry<Integer, Integer> entry : occurrences.entrySet()) {
+            int num = entry.getKey(), count = entry.getValue();
+            if (queue.size() == k) {
+                if (queue.peek()[1] < count) {
+                    queue.poll();
+                    queue.offer(new int[]{num, count});
+                }
+            } else {
+                queue.offer(new int[]{num, count});
+            }
+        }
+        int[] ret = new int[k];
+        for (int i = 0; i < k; ++i) {
+            ret[i] = queue.poll()[0];
+        }
+        return ret;
+    }
+
+
+    /**
+     * 9.08 77. 组合
+     *
+     * @param n
+     * @param k
+     * @return
+     */
+    public List<List<Integer>> combine(int n, int k) {
+        List<List<Integer>> res = new ArrayList<>();
+        int[] arr = new int[n];
+        for (int i = 0; i < n; i++) {
+            arr[i] = i + 1;
+        }
+        getCombine(res, new ArrayList<>(), 0, k, arr);
+        return res;
+    }
+
+    void getCombine(List<List<Integer>> res, List<Integer> list, int idx, int k, int[] arr) {
+        if (list.size() == k) {
+            res.add(new ArrayList<>(list));
+            return;
+        }
+        for (int i = idx; i < arr.length; i++) {
+            list.add(arr[i]);
+            getCombine(res, list, i + 1, k, arr);
+            list.remove(list.size() - 1);
         }
     }
 
