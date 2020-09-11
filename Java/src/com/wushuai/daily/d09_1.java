@@ -6,7 +6,10 @@ import java.util.*;
 
 /**
  * <p>d09_1</p>
- * <p>description</p>
+ * <p>
+ * 回溯专场
+ * N皇后，全排列，组合数，等
+ * </p>
  *
  * @author wushuai
  * @version 1.0.0
@@ -303,6 +306,92 @@ public class d09_1 {
             getCombine(res, list, i + 1, k, arr);
             list.remove(list.size() - 1);
         }
+    }
+
+
+    /**
+     * 9.09 39. 组合总和
+     *
+     * @param candidates
+     * @param target
+     * @return
+     */
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        List<List<Integer>> res = new ArrayList<>();
+        combinationSum(candidates, target, 0, res, new ArrayList<>());
+        return res;
+    }
+
+    void combinationSum(int[] candidates, int target, int idx, List<List<Integer>> res, List<Integer> list) {
+        if (idx == candidates.length) {
+            return;
+        }
+        if (target == 0) {
+            res.add(new ArrayList<>(list));
+            return;
+        }
+        combinationSum(candidates, target, idx + 1, res, list);
+        if (target - candidates[idx] >= 0) {
+            list.add(candidates[idx]);
+            combinationSum(candidates, target - candidates[idx], idx, res, list);
+            list.remove(list.size() - 1);
+        }
+    }
+
+
+    /**
+     * 9.10 40. 组合总和 II
+     *
+     * @param candidates
+     * @param target
+     * @return
+     */
+    public List<List<Integer>> combinationSum2(int[] candidates, int target) {
+        List<List<Integer>> res = new ArrayList<>();
+        combinationSum2(candidates, target, 0, res, new ArrayList<>());
+        res = removeDuplicatedArray(res);
+        return res;
+    }
+
+
+    void combinationSum2(int[] candidates, int target, int idx, List<List<Integer>> res, List<Integer> list) {
+        if (target == 0) {
+            res.add(new ArrayList<>(list));
+            return;
+        }
+        if (idx == candidates.length) {
+            return;
+        }
+        combinationSum2(candidates, target, idx + 1, res, list);
+        if (target - candidates[idx] >= 0) {
+            list.add(candidates[idx]);
+            combinationSum2(candidates, target - candidates[idx], idx + 1, res, list);
+            list.remove(list.size() - 1);
+        }
+    }
+
+    List<List<Integer>> removeDuplicatedArray(List<List<Integer>> arrs) {
+        Set<String> set = new HashSet<>();
+        for (List<Integer> list : arrs) {
+            Collections.sort(list);
+            StringBuilder sb = new StringBuilder();
+            for (Integer in : list) {
+                sb.append(',');
+                sb.append(in);
+            }
+            set.add(sb.substring(1));
+        }
+        System.out.println(set);
+        arrs = new ArrayList<>();
+        for (String str : set) {
+            String[] strs = str.split(",");
+            List<Integer> list = new ArrayList<>();
+            for (String s : strs) {
+                list.add(Integer.valueOf(s));
+            }
+            arrs.add(list);
+        }
+        return arrs;
     }
 
     @Test
