@@ -3,7 +3,9 @@ package com.wushuai.daily;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 /**
  * <p>d09_2</p>
@@ -45,6 +47,48 @@ public class d09_2 {
             getCombination(res, k, n - arr[i], i + 1, arr, list);
             list.remove(list.size() - 1);
         }
+    }
+
+
+    public class TreeNode {
+        int val;
+        TreeNode left;
+        TreeNode right;
+
+        TreeNode(int x) {
+            val = x;
+        }
+    }
+
+    /**
+     * 9.12 637. 二叉树的层平均值
+     *
+     * @param root
+     * @return
+     */
+    public List<Double> averageOfLevels(TreeNode root) {
+        List<Double> res = new ArrayList<>();
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.add(root);
+        while (!queue.isEmpty()) {
+            long sum = 0;
+            int count = 0;
+            List<TreeNode> tmp = new ArrayList<>();
+            while (!queue.isEmpty()) {
+                TreeNode node = queue.poll();
+                if (node.left != null) {
+                    tmp.add(node.left);
+                }
+                if (node.right != null) {
+                    tmp.add(node.right);
+                }
+                sum += (long) node.val;
+                count++;
+            }
+            res.add((double) sum / count);
+            queue.addAll(tmp);
+        }
+        return res;
     }
 
     @Test
