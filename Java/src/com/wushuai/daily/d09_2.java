@@ -2,10 +2,7 @@ package com.wushuai.daily;
 
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 /**
  * <p>d09_2</p>
@@ -91,9 +88,64 @@ public class d09_2 {
         return res;
     }
 
+
+    /**
+     * 9.13 79. 单词搜索
+     * 经典回溯dfs
+     *
+     * @param board
+     * @param word
+     * @return
+     */
+    public boolean exist(char[][] board, String word) {
+        int[] dx = new int[]{-1, 1, 0, 0};
+        int[] dy = new int[]{0, 0, -1, 1};
+        int row = board.length;
+        int col = board[0].length;
+        boolean[][] visit = new boolean[row][col];
+        for (boolean[] b : visit) {
+            Arrays.fill(b, false);
+        }
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
+                if (word.charAt(0) == board[i][j]) {
+                    visit[i][j] = true;
+                    boolean flag = dfs(board, visit, word, 1, dx, dy, i, j);
+                    if (flag) {
+                        return true;
+                    }
+                    visit[i][j] = false;
+                }
+            }
+        }
+        return false;
+    }
+
+    boolean dfs(char[][] board, boolean[][] visit, String word, int idx, int[] dx, int[] dy, int x, int y) {
+        if (idx == word.length()) {
+            return true;
+        }
+        int row = board.length;
+        int col = board[0].length;
+        for (int i = 0; i < 4; i++) {
+            int newX = x + dx[i];
+            int newY = y + dy[i];
+            if (newX >= 0 && newX < row && newY >= 0 && newY < col &&
+                    !visit[newX][newY] && word.charAt(idx) == board[newX][newY]) {
+                visit[newX][newY] = true;
+                boolean flag = dfs(board, visit, word, idx + 1, dx, dy, newX, newY);
+                if (flag) {
+                    return true;
+                }
+                visit[newX][newY] = false;
+            }
+        }
+        return false;
+    }
+
     @Test
     public void test() {
         d09_2 o = new d09_2();
-
+        exist(new char[][]{{'a', 'a'}}, "aaa");
     }
 }
