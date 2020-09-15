@@ -143,6 +143,75 @@ public class d09_2 {
         return false;
     }
 
+
+    /**
+     * 9.14 94. 二叉树的中序遍历
+     *
+     * @param root
+     * @return
+     */
+    public List<Integer> inorderTraversal(TreeNode root) {
+        Stack<TreeNode> stack = new Stack<>();
+        List<Integer> res = new ArrayList<>();
+        stack.push(root);
+        while (!stack.isEmpty() || root != null) {
+            while (root != null) {
+                stack.push(root.left);
+                root = root.left;
+            }
+            root = stack.pop();
+            res.add(root.val);
+            root = root.right;
+        }
+        return res;
+    }
+
+
+    /**
+     * 9.15 37. 解数独
+     * https://leetcode-cn.com/problems/sudoku-solver/solution/
+     *
+     * @param board
+     */
+    public void solveSudoku(char[][] board) {
+        boolean[][] lines = new boolean[9][9];
+        boolean[][] columns = new boolean[9][9];
+        boolean[][][] blocks = new boolean[3][3][9];
+        List<int[]> list = new ArrayList<>();
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                if (board[i][j] == '.') {
+                    list.add(new int[]{i, j});
+                } else {
+                    int digit = board[i][j] - '0' - 1;
+                    lines[i][digit] = columns[j][digit] = blocks[i / 3][j / 3][digit] = true;
+                }
+            }
+        }
+        dfs(board, 0, list, blocks, lines, columns, new boolean[]{false});
+    }
+
+
+    void dfs(char[][] board, int size, List<int[]> list,
+             boolean[][][] blocks, boolean[][] lines, boolean[][] columns, boolean[] valid) {
+        if (size == list.size()) {
+            valid[0] = true;
+            return;
+        }
+        int[] ints = list.get(size);
+        int i = ints[0];
+        int j = ints[1];
+        for (int digit = 0; digit < 9 && !valid[0]; digit++) {
+            if (!lines[i][digit] && !columns[j][digit] && !blocks[i / 3][j / 3][digit]) {
+                lines[i][digit] = columns[j][digit] = blocks[i / 3][j / 3][digit] = true;
+                board[i][j] = (char) (digit + '0' + 1);
+                dfs(board, size + 1, list, blocks, lines, columns, valid);
+                lines[i][digit] = columns[j][digit] = blocks[i / 3][j / 3][digit] = false;
+            }
+        }
+    }
+
+
     @Test
     public void test() {
         d09_2 o = new d09_2();
