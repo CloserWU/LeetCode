@@ -212,6 +212,24 @@ public class d09_2 {
     }
 
 
+    /**
+     * 9.16 226. 翻转二叉树
+     *
+     * @param root
+     * @return
+     */
+    public TreeNode invertTree(TreeNode root) {
+        if (root != null) {
+            TreeNode tmp = root.left;
+            root.left = root.right;
+            root.right = tmp;
+            invertTree(root.left);
+            invertTree(root.right);
+        }
+        return root;
+    }
+
+
     @Test
     public void test() {
         d09_2 o = new d09_2();
