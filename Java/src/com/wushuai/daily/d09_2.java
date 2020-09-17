@@ -230,6 +230,81 @@ public class d09_2 {
     }
 
 
+    /**
+     * 9.17 685. 冗余连接 II
+     *
+     * @param edges
+     * @return
+     */
+    public int[] findRedundantDirectedConnection(int[][] edges) {
+        int[] degree = new int[edges.length + 1];
+        int flag = -1;
+        for (int[] edge : edges) {
+            int to = edge[1];
+            degree[to]++;
+            if (degree[to] == 2) {
+                flag = to;
+                break;
+            }
+        }
+        int[] rp = new int[edges.length + 1];
+        for (int i = 0; i < rp.length; i++) {
+            rp[i] = i;
+        }
+        if (flag == -1) {
+            for (int[] edge : edges) {
+                int from = edge[0];
+                int to = edge[1];
+                if (findRoot(rp, from) != findRoot(rp, to)) {
+                    rp[to] = from;
+                } else {
+                    return edge;
+                }
+            }
+            return new int[0];
+        } else {
+            int pre = -1, beh = -1;
+            for (int i = 0; i < rp.length; i++) {
+                if (edges[i][1] == flag) {
+                    if (pre == -1) {
+                        pre = i;
+                    } else {
+                        beh = i;
+                        break;
+                    }
+                }
+            }
+            int r0 = -1, r1 = -1, count = 0;
+            for (int i = 0; i < edges.length; i++) {
+                if (i == beh) {
+                    continue;
+                }
+                int from = findRoot(rp, edges[i][0]);
+                int to = findRoot(rp, edges[i][1]);
+                rp[to] = from;
+            }
+            for (int i = 1; i < rp.length; i++) {
+                if (rp[i] == i) {
+                    count++;
+                }
+            }
+            if (count == 2) {
+                return edges[pre];
+            } else {
+                return edges[beh];
+            }
+        }
+    }
+
+
+    int findRoot(int[] rp, int x) {
+        while (rp[x] != x) {
+            x = rp[x];
+        }
+        return x;
+    }
+
+
     @Test
     public void test() {
         d09_2 o = new d09_2();
