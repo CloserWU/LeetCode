@@ -305,9 +305,44 @@ public class d09_2 {
     }
 
 
+    /**
+     * 9.18 47. 全排列 II
+     *
+     * @param nums
+     * @return
+     */
+    public List<List<Integer>> permuteUnique(int[] nums) {
+        Arrays.sort(nums);
+        boolean[] visit = new boolean[nums.length];
+        List<List<Integer>> res = new ArrayList<>();
+        dfs(visit, nums, res, new ArrayList<>());
+        return res;
+    }
+
+    void dfs(boolean[] visit, int[] nums, List<List<Integer>> res, List<Integer> list) {
+        if (list.size() == nums.length) {
+            res.add(new ArrayList<>(list));
+        }
+        for (int i = 0; i < nums.length; i++) {
+            // 仔细思考
+            if (visit[i] || (i > 0 && nums[i] == nums[i - 1] && visit[i - 1])) {
+                continue;
+            }
+            visit[i] = true;
+            list.add(nums[i]);
+            dfs(visit, nums, res, list);
+            list.remove(list.size() - 1);
+            visit[i] = false;
+        }
+    }
+
+
     @Test
     public void test() {
         d09_2 o = new d09_2();
+        System.out.println(permuteUnique(new int[]{1, 1, 2}));
+        System.out.println(permuteUnique(new int[]{1, 3, 2, 4}));
+        System.out.println(permuteUnique(new int[]{1, 3, 1, 4}));
         exist(new char[][]{{'a', 'a'}}, "aaa");
     }
 }
