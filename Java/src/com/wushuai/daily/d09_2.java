@@ -337,6 +337,53 @@ public class d09_2 {
     }
 
 
+    /**
+     * 9.19 404. 左叶子之和
+     *
+     * @param root
+     * @return
+     */
+    public int sumOfLeftLeaves(TreeNode root) {
+        if (root != null) {
+            int ans = 0;
+            if (root.left != null) {
+                if (root.left.left == null && root.left.right == null) {
+                    ans = root.left.val + sumOfLeftLeaves(root.right);
+                } else {
+                    ans = sumOfLeftLeaves(root.left) + sumOfLeftLeaves(root.right);
+                }
+            } else {
+                ans = sumOfLeftLeaves(root.right);
+            }
+            return ans;
+        }
+        return 0;
+    }
+
+
+    /**
+     * 9.20 78. 子集
+     *
+     * @param nums
+     * @return
+     */
+    public List<List<Integer>> subsets(int[] nums) {
+        List<List<Integer>> res = new ArrayList<>();
+        dfs(res, new ArrayList<>(), 0, nums);
+        return res;
+    }
+
+    void dfs(List<List<Integer>> res, List<Integer> list, int idx, int[] nums) {
+        if (nums.length == idx) {
+            res.add(new ArrayList<>(list));
+            return;
+        }
+        dfs(res, list, idx + 1, nums);
+        list.add(nums[idx]);
+        dfs(res, list, idx + 1, nums);
+        list.remove(list.size() - 1);
+    }
+
     @Test
     public void test() {
         d09_2 o = new d09_2();
