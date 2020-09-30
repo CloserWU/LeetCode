@@ -2,10 +2,7 @@ package com.wushuai.daily;
 
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>d09_3</p>
@@ -204,6 +201,191 @@ public class d09_3 {
         }
 
         return helper(0, inorder.length - 1);
+    }
+
+
+    /**
+     * 9.26 113. 路径总和 II
+     *
+     * @param root
+     * @param sum
+     * @return
+     */
+    public List<List<Integer>> pathSum(TreeNode root, int sum) {
+        List<List<Integer>> res = new ArrayList<>();
+        dfs(root, new ArrayList<>(), sum, res);
+        return res;
+    }
+
+    void dfs(TreeNode root, List<Integer> list, int sum, List<List<Integer>> res) {
+        if (root == null || root.val > sum) {
+            return;
+        }
+        if (sum - root.val == 0 && root.left == null && root.right == null) {
+            list.add(root.val);
+            res.add(new ArrayList<>(list));
+            list.remove(list.size() - 1);
+        } else {
+            list.add(root.val);
+            dfs(root.left, list, sum - root.val, res);
+            dfs(root.right, list, sum - root.val, res);
+            list.remove(list.size() - 1);
+        }
+    }
+
+
+    /**
+     * 9.27 235. 二叉搜索树的最近公共祖先
+     *
+     * @param root
+     * @param p
+     * @param q
+     * @return
+     */
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        dfs(root, p, q);
+        return target;
+    }
+
+    TreeNode target = null;
+
+
+    boolean dfs(TreeNode root, TreeNode p, TreeNode q) {
+        if (root == null) {
+            return false;
+        }
+        boolean left = dfs(root.left, p, q);
+        boolean right = dfs(root.right, p, q);
+        if (target != null) {
+            return false;
+        }
+        if (left && right) {
+            target = root;
+        }
+        if ((root == p || root == q) && (left || right)) {
+            target = root;
+        }
+        if (root == p || root == q) {
+            return true;
+        }
+        return left || right;
+    }
+
+
+    class Node {
+        public int val;
+        public Node left;
+        public Node right;
+        public Node next;
+
+        public Node() {
+        }
+
+        public Node(int _val) {
+            val = _val;
+        }
+
+        public Node(int _val, Node _left, Node _right, Node _next) {
+            val = _val;
+            left = _left;
+            right = _right;
+            next = _next;
+        }
+    }
+
+
+    /**
+     * 9.28 117. 填充每个节点的下一个右侧节点指针 II
+     *
+     * @param root
+     * @return
+     */
+    public Node connect(Node root) {
+        if (root == null) {
+            return null;
+        }
+        Queue<Node> queue = new LinkedList<>();
+        queue.add(root);
+        while (!queue.isEmpty()) {
+            List<Node> level = new ArrayList<>(queue.size());
+            while (!queue.isEmpty()) {
+                level.add(queue.poll());
+            }
+            for (int i = 0; i < level.size(); i++) {
+                if (i > 0) {
+                    level.get(i - 1).next = level.get(i);
+                }
+                if (level.get(i).left != null) {
+                    queue.add(level.get(i).left);
+                }
+                if (level.get(i).right != null) {
+                    queue.add(level.get(i).right);
+                }
+            }
+        }
+        return root;
+    }
+
+
+    /**
+     * 9.29 145. 二叉树的后序遍历
+     *
+     * @param root
+     * @return
+     */
+    public List<Integer> postorderTraversal(TreeNode root) {
+        List<Integer> res = new ArrayList<>();
+        Stack<TreeNode> stack = new Stack<>();
+        // pre是上次访问到的节点，如果root.right == pre 说明它的右子树以及访问完毕，可以访问root了
+        TreeNode pre = null;
+        while (!stack.isEmpty() || root != null) {
+            while (root != null) {
+                stack.push(root);
+                root = root.left;
+            }
+            root = stack.pop();
+            // root保证左子树是空的
+            if (root.right == null || root.right == pre) {
+                res.add(root.val);
+                pre = root;
+                root = null;
+            } else {
+                stack.push(root);
+                root = root.right;
+            }
+        }
+        return res;
+    }
+
+
+    /**
+     * 9.30 701. 二叉搜索树中的插入操作
+     *
+     * @param root
+     * @param val
+     * @return
+     */
+    public TreeNode insertIntoBST(TreeNode root, int val) {
+        if (root == null) {
+            return new TreeNode(val);
+        }
+        TreeNode tmp = root;
+        while (root != null) {
+            if (root.val > val) {
+                if (root.left == null) {
+                    root.left = new TreeNode(val);
+                    break;
+                }
+                root = root.left;
+            } else {
+                if (root.right == null) {
+                    root.right = new TreeNode(val);
+                    break;
+                }
+                root = root.right;
+            }
+        }
+        return tmp;
     }
 
 
